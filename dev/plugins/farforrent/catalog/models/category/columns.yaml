@@ -1,0 +1,33 @@
+columns:
+    name_ua:
+        label: name_ua
+        type: text
+        searchable: true
+        sortable: true
+    name_en:
+        label: name_en
+        type: text
+        searchable: true
+        sortable: true
+    slug:
+        label: slug
+        type: text
+        sortable: false
+    image:
+        label: image
+        type: text
+        sortable: true
+    created_at:
+        label: created_at
+        type: datetime
+        searchable: true
+        sortable: true
+    updated_at:
+        label: updated_at
+        type: datetime
+        searchable: true
+        sortable: true
+    id:
+        label: id
+        type: number
+        sortable: true

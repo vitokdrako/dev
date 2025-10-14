@@ -1,0 +1,392 @@
+title = "Кабінет менеджера"
+url = "/manager-new"
+layout = ""
+is_hidden = 0
+==
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кабінет менеджера - FarforRent</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --background: 0 0% 100%;
+            --foreground: 0 0% 3.9%;
+            --card: 0 0% 100%;
+            --card-foreground: 0 0% 3.9%;
+            --primary: 0 0% 9%;
+            --primary-foreground: 0 0% 98%;
+            --secondary: 0 0% 96.1%;
+            --secondary-foreground: 0 0% 9%;
+            --muted: 0 0% 96.1%;
+            --muted-foreground: 0 0% 45.1%;
+            --accent: 0 0% 96.1%;
+            --accent-foreground: 0 0% 9%;
+            --destructive: 0 84.2% 60.2%;
+            --destructive-foreground: 0 0% 98%;
+            --border: 0 0% 89.8%;
+            --input: 0 0% 89.8%;
+            --ring: 0 0% 3.9%;
+            --radius: 0.5rem;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background-color: hsl(var(--background));
+            color: hsl(var(--foreground));
+        }
+        
+        .card {
+            background-color: hsl(var(--card));
+            color: hsl(var(--card-foreground));
+            border-radius: calc(var(--radius) * 2);
+            border: 1px solid hsl(var(--border));
+        }
+        
+        .btn-primary {
+            background-color: hsl(var(--primary));
+            color: hsl(var(--primary-foreground));
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            font-weight: 500;
+            transition: opacity 0.2s;
+        }
+        
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+        
+        .btn-secondary {
+            background-color: hsl(var(--secondary));
+            color: hsl(var(--secondary-foreground));
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            font-weight: 500;
+        }
+        
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 9999px;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: 1px solid;
+        }
+        
+        .badge-new { background: #faf5ff; color: #7c3aed; border-color: #e9d5ff; }
+        .badge-issue { background: #f0fdf4; color: #16a34a; border-color: #bbf7d0; }
+        .badge-return { background: #eff6ff; color: #2563eb; border-color: #bfdbfe; }
+        .badge-problem { background: #fff7ed; color: #ea580c; border-color: #fed7aa; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="min-h-screen">
+        <!-- Header -->
+        <div class="bg-white border-b sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center gap-4">
+                        <i class="fas fa-wine-glass text-2xl text-purple-600"></i>
+                        <h1 class="text-xl font-bold">FarforRent Manager</h1>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <span class="text-sm text-gray-600" id="current-time"></span>
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white font-bold">
+                                М
+                            </div>
+                            <span class="text-sm font-medium">Менеджер</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Top Bar -->
+            <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold mb-1">Панель управління</h2>
+                    <p class="text-gray-600">Замовлення на сьогодні</p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="window.location.href='/manager/orders/create'" class="btn-primary inline-flex items-center gap-2">
+                        <i class="fas fa-plus-circle"></i>
+                      Створити замовлення
+                   </button>
+                    <button onclick="window.location.href='/manager/finance-new'" class="btn-secondary inline-flex items-center gap-2">
+                        <i class="fas fa-money-bill-wave"></i>
+                        Фінанси
+                    </button>
+                    <button onclick="window.location.href='/manager/damages'" class="btn-secondary inline-flex items-center gap-2">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Пошкодження
+                    </button>
+                </div>
+            </div>
+
+            <!-- KPIs -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div class="card p-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm text-gray-600">Нові замовлення</span>
+                        <i class="fas fa-file-alt text-purple-600"></i>
+                    </div>
+                    <div class="text-3xl font-bold" id="kpi-new">0</div>
+                    <div class="text-xs text-gray-500 mt-1">За сьогодні</div>
+                </div>
+                
+                <div class="card p-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm text-gray-600">На видачу</span>
+                        <i class="fas fa-box-open text-green-600"></i>
+                    </div>
+                    <div class="text-3xl font-bold" id="kpi-issue">0</div>
+                    <div class="text-xs text-gray-500 mt-1">Готові</div>
+                </div>
+                
+                <div class="card p-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm text-gray-600">На повернення</span>
+                        <i class="fas fa-undo text-blue-600"></i>
+                    </div>
+                    <div class="text-3xl font-bold" id="kpi-return">0</div>
+                    <div class="text-xs text-gray-500 mt-1">Сьогодні</div>
+                </div>
+                
+                <div class="card p-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm text-gray-600">Дохід</span>
+                        <i class="fas fa-hryvnia-sign text-purple-600"></i>
+                    </div>
+                    <div class="text-3xl font-bold" id="kpi-revenue">₴0</div>
+                    <div class="text-xs text-green-600 mt-1">+0%</div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="card mb-6">
+                <div class="border-b">
+                    <div class="flex gap-4 px-6">
+                        <button class="tab-btn active py-4 border-b-2 border-purple-600 font-medium text-purple-600" data-tab="all" onclick="switchTab('all')">
+                            Всі <span class="ml-1 px-2 py-0.5 bg-purple-100 rounded-full text-xs" id="count-all">0</span>
+                        </button>
+                        <button class="tab-btn py-4 border-b-2 border-transparent font-medium text-gray-600 hover:text-gray-900" data-tab="issue" onclick="switchTab('issue')">
+                            Видача <span class="ml-1 px-2 py-0.5 bg-gray-100 rounded-full text-xs" id="count-issue">0</span>
+                        </button>
+                        <button class="tab-btn py-4 border-b-2 border-transparent font-medium text-gray-600 hover:text-gray-900" data-tab="return" onclick="switchTab('return')">
+                            Повернення <span class="ml-1 px-2 py-0.5 bg-gray-100 rounded-full text-xs" id="count-return">0</span>
+                        </button>
+                        <button class="tab-btn py-4 border-b-2 border-transparent font-medium text-gray-600 hover:text-gray-900" data-tab="new" onclick="switchTab('new')">
+                            Нові <span class="ml-1 px-2 py-0.5 bg-gray-100 rounded-full text-xs" id="count-new">0</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Search Bar -->
+                <div class="p-6 border-b">
+                    <div class="relative">
+                        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        <input 
+                            type="text" 
+                            id="search-input"
+                            placeholder="Пошук за номером, іменем або телефоном..."
+                            class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600"
+                            oninput="filterOrders()"
+                        >
+                    </div>
+                </div>
+
+                <!-- Orders List -->
+                <div id="orders-container" class="p-6">
+                    <div class="text-center py-12 text-gray-500">
+                        <i class="fas fa-spinner fa-spin text-4xl mb-4"></i>
+                        <p>Завантаження замовлень...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allOrders = [];
+        let currentTab = 'all';
+
+        // Update time
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('current-time').textContent = now.toLocaleString('uk-UA', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        // Load orders
+        async function loadOrders() {
+            try {
+                const response = await fetch('/api/manager/orders/today');
+                const data = await response.json();
+                allOrders = data;
+                
+                updateKPIs();
+                renderOrders();
+            } catch (error) {
+                console.error('Error loading orders:', error);
+                document.getElementById('orders-container').innerHTML = `
+                    <div class="text-center py-12 text-red-500">
+                        <i class="fas fa-exclamation-triangle text-4xl mb-4"></i>
+                        <p>Помилка завантаження замовлень</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Update KPIs
+        function updateKPIs() {
+            const newOrders = allOrders.filter(o => o.kind === 'new');
+            const issueOrders = allOrders.filter(o => o.kind === 'issue');
+            const returnOrders = allOrders.filter(o => o.kind === 'return');
+            
+            document.getElementById('kpi-new').textContent = newOrders.length;
+            document.getElementById('kpi-issue').textContent = issueOrders.length;
+            document.getElementById('kpi-return').textContent = returnOrders.length;
+            
+            const totalRevenue = allOrders.reduce((sum, o) => sum + (o.sum || 0), 0);
+            document.getElementById('kpi-revenue').textContent = '₴' + totalRevenue.toLocaleString('uk-UA');
+            
+            // Update counts in tabs
+            document.getElementById('count-all').textContent = allOrders.length;
+            document.getElementById('count-issue').textContent = issueOrders.length;
+            document.getElementById('count-return').textContent = returnOrders.length;
+            document.getElementById('count-new').textContent = newOrders.length;
+        }
+
+        // Render orders
+        function renderOrders() {
+            const container = document.getElementById('orders-container');
+            const searchQuery = document.getElementById('search-input').value.toLowerCase();
+            
+            let filtered = allOrders;
+            
+            // Filter by tab
+            if (currentTab !== 'all') {
+                filtered = filtered.filter(o => o.kind === currentTab);
+            }
+            
+            // Filter by search
+            if (searchQuery) {
+                filtered = filtered.filter(o => 
+                    o.id.toString().includes(searchQuery) ||
+                    (o.name && o.name.toLowerCase().includes(searchQuery)) ||
+                    (o.phone && o.phone.includes(searchQuery))
+                );
+            }
+            
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12 text-gray-500">
+                        <i class="fas fa-inbox text-4xl mb-4"></i>
+                        <p>Немає замовлень</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = filtered.map(order => `
+                <div class="card mb-4 p-6 hover:shadow-lg transition-shadow cursor-pointer" onclick="viewOrder(${order.id})">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex items-center gap-3">
+                            <span class="badge badge-${order.kind}">
+                                ${order.kind === 'new' ? 'Нове' : order.kind === 'issue' ? 'Видача' : 'Повернення'}
+                            </span>
+                        </div>
+                        <span class="font-bold text-lg">№${order.id}</span>
+                    </div>
+                    
+                    <div class="flex items-start gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold">
+                            ${order.name ? order.name.charAt(0).toUpperCase() : 'К'}
+                        </div>
+                        <div class="flex-1">
+                            <div class="font-semibold">${order.name || 'Клієнт'}</div>
+                            <div class="text-sm text-gray-600">${order.phone || 'Немає телефону'}</div>
+                        </div>
+                    </div>
+                    
+                    ${order.note ? `
+                    <div class="bg-blue-50 p-3 rounded-lg text-sm mb-4">
+                        <div class="text-gray-500 text-xs mb-1">Коментар:</div>
+                        <div>${order.note}</div>
+                    </div>
+                    ` : ''}
+                    
+                    <div class="flex justify-between items-center pt-4 border-t">
+                        <div class="text-sm text-gray-600">
+                            Сума: <span class="font-bold text-purple-600">₴${order.sum ? order.sum.toLocaleString('uk-UA') : '0'}</span>
+                        </div>
+                        <button 
+                            onclick="event.stopPropagation(); viewOrder(${order.id})" 
+                            class="btn-primary inline-flex items-center gap-2"
+                        >
+                            <i class="fas fa-eye"></i>
+                            Переглянути
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Switch tab
+        function switchTab(tab) {
+            currentTab = tab;
+            
+            // Update active state
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                if (btn.dataset.tab === tab) {
+                    btn.classList.add('active', 'border-purple-600', 'text-purple-600');
+                    btn.classList.remove('border-transparent', 'text-gray-600');
+                } else {
+                    btn.classList.remove('active', 'border-purple-600', 'text-purple-600');
+                    btn.classList.add('border-transparent', 'text-gray-600');
+                }
+            });
+            
+            renderOrders();
+        }
+
+        // Filter orders
+        function filterOrders() {
+            renderOrders();
+        }
+
+        // View order
+        function viewOrder(orderId) {
+            // Check current type from the order
+            const order = allOrders.find(o => o.id === orderId);
+            if (order) {
+                if (order.kind === 'issue') {
+                    window.location.href = `/manager/order/${orderId}`;
+                } else if (order.kind === 'return') {
+                    window.location.href = `/manager/return/${orderId}`;
+                } else {
+                    // Default to issue page
+                    window.location.href = `/manager/order/${orderId}`;
+                }
+            }
+        }
+
+        // Initialize
+        loadOrders();
+    </script>
+</body>
+</html>

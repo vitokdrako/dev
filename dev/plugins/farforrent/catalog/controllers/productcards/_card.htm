@@ -1,0 +1,149 @@
+<?php
+use Illuminate\Support\Str;
+
+$percent = (int)($group->rent_percent ?? 20);
+$rateMap = ['regular'=>1,'rare'=>2,'vintage'=>3];
+$rate    = $rateMap[$group->rarity ?? 'regular'] ?? 1;
+?>
+
+
+<?= $this->makePartial('group_meta', ['group' => $group]) ?>
+<div class="card-box modern">
+  <div class="card-head">
+    <div class="card-title">
+      <strong>#<?= $group->id ?></strong> — <?= e($group->name_ua) ?>
+      <span class="muted"> (<?= e(optional($group->category)->name_ua) ?> / <?= e(optional($group->subcategory)->name_ua) ?>)</span>
+    </div>
+    <div class="card-meta">
+      <span class="badge">Оренда: <?= $percent ?>%</span>
+      <span class="badge">Застава ×<?= $rate ?></span>
+      <a class="btn btn-light btn-sm" target="_blank"
+         href="<?= Backend::url('farforrent/catalog/productgroups/update/'.$group->id) ?>">
+        Редагувати групу
+      </a>
+      <a class="btn btn-success btn-sm" data-add-row data-group="<?= $group->id ?>">
+        + Додати розмір
+      </a>
+    </div>
+  </div>
+
+  <form class="variants-form"
+        data-request="onSaveCard"
+        data-request-flash="1"
+        data-percent="<?= $percent ?>"
+        data-rate="<?= $rate ?>"
+        data-request-data="groupId: <?= $group->id ?>">
+
+    <table class="variants-table modern">
+      <tbody id="rows-<?= $group->id ?>">
+
+      <?php foreach ($group->variants as $i => $v): ?>
+        <?php
+          // mediafinder для існуючого продукту
+          $imgW = $this->makeImageWidget($v, "variants[$i]", "row_{$v->id}_$i");
+        ?>
+        <tr class="vrow">
+          <td class="img-cell">
+            <?= $imgW->renderField('image') ?>
+            <?php if ($group->name_ua): ?>
+              <div class="img-caption"><?= e(Str::limit($group->name_ua, 22)) ?></div>
+            <?php endif; ?>
+          </td>
+
+          <td class="fields">
+            <input type="hidden" name="variants[<?= $i ?>][id]" value="<?= $v->id ?>">
+
+            <div class="f">
+              <div class="lbl">Розмір</div>
+              <input class="form-control"
+                     name="variants[<?= $i ?>][size]"
+                     value="<?= e($v->size) ?>">
+            </div>
+
+            <div class="f">
+              <div class="lbl">Артикул</div>
+              <input class="form-control"
+                     name="variants[<?= $i ?>][sku]" required
+                     value="<?= e($v->sku) ?>">
+            </div>
+
+            <div class="f">
+              <div class="lbl">Ціна</div>
+              <input class="form-control price" type="number" step="0.01" required
+                     name="variants[<?= $i ?>][price]"
+                     value="<?= e($v->price) ?>">
+            </div>
+
+            <div class="f kpi">
+              <div class="lbl">Оренда (auto)</div>
+              <div class="pill rent"><?= (int)$v->rent_price ?></div>
+            </div>
+
+            <div class="f kpi">
+              <div class="lbl">Депозит (auto)</div>
+              <div class="pill deposit"><?= (int)$v->deposit ?></div>
+            </div>
+
+            <div class="f">
+              <div class="lbl">Висота</div>
+              <input class="form-control" type="number" step="0.01"
+                     name="variants[<?= $i ?>][height]"
+                     value="<?= e($v->height) ?>">
+            </div>
+
+            <div class="f">
+              <div class="lbl">Ширина</div>
+              <input class="form-control" type="number" step="0.01"
+                     name="variants[<?= $i ?>][width]"
+                     value="<?= e($v->width) ?>">
+            </div>
+
+            <div class="f">
+              <div class="lbl">Діаметр</div>
+              <input class="form-control" type="number" step="0.01"
+                     name="variants[<?= $i ?>][diameter]"
+                     value="<?= e($v->diameter) ?>">
+            </div>
+
+            <div class="f">
+              <div class="lbl">Довжина</div>
+              <input class="form-control" type="number" step="0.01"
+                     name="variants[<?= $i ?>][length]"
+                     value="<?= e($v->length) ?>">
+            </div>
+
+            <div class="f">
+              <div class="lbl">Статус</div>
+              <select class="form-control"
+                      name="variants[<?= $i ?>][status]">
+                <option value="available"  <?= $v->status==='available'?'selected':'' ?>>Доступний</option>
+                <option value="rented"     <?= $v->status==='rented'?'selected':'' ?>>В оренді</option>
+                <option value="damaged"    <?= $v->status==='damaged'?'selected':'' ?>>Пошкоджений</option>
+                <option value="in_progress"<?= $v->status==='in_progress'?'selected':'' ?>>На обробці</option>
+                <option value="for_sale"   <?= $v->status==='for_sale'?'selected':'' ?>>На продаж</option>
+              </select>
+            </div>
+          </td>
+
+          <td class="actions">
+            <a class="btn btn-link text-danger"
+               data-request="onDeleteVariant"
+               data-request-data="groupId: <?= $group->id ?>, id: <?= $v->id ?>"
+               data-request-confirm="Видалити варіант?"
+               data-request-success="$(this).closest('tr').remove();">
+              <i class="icon-trash"></i>
+            </a>
+          </td>
+        </tr>
+      <?php endforeach; ?>
+
+      </tbody>
+    </table>
+
+    <div class="card-actions-left">
+      <button class="btn btn-primary btn-block" type="submit">Зберегти</button>
+      <button class="btn btn-primary btn-block" type="submit">Зберегти і закрити</button>
+      <a class="btn btn-light btn-block" href="javascript:location.reload()">Скасувати</a>
+    </div>
+  </form>
+</div>

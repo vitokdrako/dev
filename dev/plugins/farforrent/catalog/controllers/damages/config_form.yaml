@@ -1,0 +1,11 @@
+name: Пошкодження
+form: $/farforrent/catalog/models/damage/fields.yaml
+modelClass: Farforrent\Catalog\Models\Damage
+
+create:
+    title: Нове пошкодження
+    redirect: farforrent/catalog/damages
+
+update:
+    title: Редагувати пошкодження
+    redirect: farforrent/catalog/damages

@@ -1,0 +1,44 @@
+scopes:
+  category_id:
+    label: Категорія
+    type: group
+    modelClass: Farforrent\Catalog\Models\Category
+    nameFrom: name_ua
+    conditions: category_id in (:filtered)
+
+  subcategory_id:
+    label: Підкатегорія
+    type: group
+    modelClass: Farforrent\Catalog\Models\Subcategory
+    nameFrom: name_ua
+    conditions: subcategory_id in (:filtered)
+
+  status:
+    label: Статус
+    type: group
+    options:
+      available: Доступний
+      rented: Виданий
+      damaged: Пошкоджений
+      in_progress: В роботі
+    conditions: status in (:filtered)
+
+  rarity:
+    label: Цінність
+    type: group
+    options:
+      regular: Звичайний
+      vintage: Вінтаж
+      rare: Рідкісний
+    conditions: rarity in (:filtered)
+  sku:
+    sku:
+    label: Пошук по артикулу
+    type: text
+    scope: skuPrefix
+  group_id:
+    label: Група
+    type: group
+    modelClass: Farforrent\Catalog\Models\ProductGroup
+    nameFrom: name_ua
+    conditions: group_id in (:filtered)

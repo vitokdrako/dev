@@ -1,0 +1,2256 @@
+title = "Кабінет менеджера - Замовлення"
+url = "/orders-manager"
+layout = "manager"
+is_hidden = 0
+meta_title = "FarforRent - Управління замовленнями"
+meta_description = "Кабінет менеджера для управління замовленнями оренди"
+
+==
+<div class="orders-manager-container">
+    <!-- Header -->
+    <div class="manager-header-section">
+        <div class="header-content">
+            <h1><i class="fas fa-tachometer-alt"></i> Кабінет менеджера FarforRent</h1>
+            <div class="header-stats">
+                <div class="stat-mini">
+                    <div class="stat-value" id="header-new-orders">-</div>
+                    <div class="stat-label">Нові</div>
+                </div>
+                <div class="stat-mini">
+                    <div class="stat-value" id="header-ready-issue">-</div>
+                    <div class="stat-label">До видачі</div>
+                </div>
+                <div class="stat-mini">
+                    <div class="stat-value" id="header-returns-due">-</div>
+                    <div class="stat-label">Повернення</div>
+                </div>
+                <div class="stat-mini">
+                    <div class="stat-value" id="header-revenue">₴0</div>
+                    <div class="stat-label">Дохід</div>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-success" onclick="showCreateOrderModal()">
+                    <i class="fas fa-plus"></i> Нове замовлення
+                </button>
+                <button class="btn btn-info" onclick="syncProducts()">
+                    <i class="fas fa-sync"></i> Синхронізація
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="manager-tabs-section">
+        <ul class="nav nav-tabs manager-nav-tabs" id="managerTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="orders-tab" data-bs-toggle="tab" data-bs-target="#orders-content" type="button" role="tab">
+                    <i class="fas fa-clipboard-list"></i> Замовлення <span class="tab-badge" id="orders-count">0</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="finance-tab" data-bs-toggle="tab" data-bs-target="#finance-content" type="button" role="tab">
+                    <i class="fas fa-coins"></i> Фінанси <span class="tab-badge" id="finance-count">0</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="damages-tab" data-bs-toggle="tab" data-bs-target="#damages-content" type="button" role="tab">
+                    <i class="fas fa-exclamation-triangle"></i> Пошкодження <span class="tab-badge" id="damages-count">0</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="calendar-tab" data-bs-toggle="tab" data-bs-target="#calendar-content" type="button" role="tab">
+                    <i class="fas fa-calendar-alt"></i> Календар
+                </button>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="tab-content manager-tab-content" id="managerTabContent">
+        
+        <!-- Orders Tab -->
+        <div class="tab-pane fade show active" id="orders-content" role="tabpanel">
+            <!-- Filters -->
+            <div class="filters-section">
+                <div class="row">
+                    <div class="col-md-3">
+                        <select class="form-control" id="status-filter">
+                            <option value="">Всі статуси</option>
+                            <option value="new">Нові замовлення</option>
+                            <option value="reserved">Зарезервовані</option>
+                            <option value="issued">Видача</option>
+                            <option value="returned">Повернення</option>
+                            <option value="closed">Закриті</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="date" class="form-control" id="date-filter" placeholder="Дата">
+                    </div>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" id="search-filter" placeholder="Пошук по номеру або клієнту">
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-primary btn-block" onclick="applyFilters()">
+                            <i class="fas fa-search"></i> Фільтрувати
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orders Cards -->
+            <div class="orders-grid" id="orders-container">
+                <!-- Orders will be loaded here -->
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination-section" id="pagination-container">
+                <!-- Pagination will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Finance Tab -->
+        <div class="tab-pane fade" id="finance-content" role="tabpanel">
+            <div class="finance-dashboard">
+                <!-- Finance Stats -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="finance-stat-card">
+                            <div class="stat-icon finance-deposits">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-number" id="total-deposits-held">₴0</div>
+                                <div class="stat-label">Депозити утримано</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="finance-stat-card">
+                            <div class="stat-icon finance-prepaid">
+                                <i class="fas fa-hand-holding-usd"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-number" id="total-prepaid">₴0</div>
+                                <div class="stat-label">Передплати сьогодні</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="finance-stat-card">
+                            <div class="stat-icon finance-pending">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-number" id="pending-payments">₴0</div>
+                                <div class="stat-label">До сплати</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="finance-stat-card">
+                            <div class="stat-icon finance-damages">
+                                <i class="fas fa-exclamation-circle"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-number" id="damage-charges">₴0</div>
+                                <div class="stat-label">Штрафи за пошкодження</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Financial Operations -->
+                <div class="row">
+                    <!-- Quick Payments -->
+                    <div class="col-md-6">
+                        <div class="finance-section-card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-credit-card"></i> Швидкі платежі</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="quick-payment-form">
+                                    <div class="row">
+                                        <div class="col-md-12 mb-3">
+                                            <input type="text" class="form-control" id="payment-order-search" 
+                                                   placeholder="Введіть номер замовлення для пошуку...">
+                                        </div>
+                                    </div>
+                                    <div id="payment-order-info" class="order-info-box" style="display: none;">
+                                        <!-- Order info will appear here -->
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Тип платежу</label>
+                                                <select class="form-control" id="payment-type">
+                                                    <option value="prepaid">Передплата</option>
+                                                    <option value="full_payment">Повна оплата</option>
+                                                    <option value="deposit_hold">Утримання депозита</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Сума</label>
+                                                <input type="number" class="form-control" id="payment-amount" step="0.01" min="0">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Спосіб оплати</label>
+                                                <select class="form-control" id="payment-method">
+                                                    <option value="cash">Готівка</option>
+                                                    <option value="card">Картка</option>
+                                                    <option value="online">Онлайн</option>
+                                                    <option value="bank_transfer">Банківський переказ</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>&nbsp;</label>
+                                                <button class="btn btn-success btn-block" onclick="processQuickPayment()">
+                                                    <i class="fas fa-check"></i> Провести платіж
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Deposits Management -->
+                    <div class="col-md-6">
+                        <div class="finance-section-card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-shield-alt"></i> Управління депозитами</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="deposits-list">
+                                    <!-- Deposits will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Transactions -->
+                <div class="finance-section-card mt-4">
+                    <div class="card-header">
+                        <h5><i class="fas fa-history"></i> Останні транзакції</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped" id="transactions-table">
+                                <thead>
+                                    <tr>
+                                        <th>Час</th>
+                                        <th>Замовлення</th>
+                                        <th>Клієнт</th>
+                                        <th>Тип</th>
+                                        <th>Сума</th>
+                                        <th>Спосіб</th>
+                                        <th>Статус</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="transactions-tbody">
+                                    <!-- Transactions will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Damages Tab -->
+        <div class="tab-pane fade" id="damages-content" role="tabpanel">
+            <div class="damages-dashboard">
+                <!-- Damage Stats -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="damage-stat-card">
+                            <div class="stat-icon damage-pending">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-number" id="pending-damages">0</div>
+                                <div class="stat-label">Очікують оцінки</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="damage-stat-card">
+                            <div class="stat-icon damage-repair">
+                                <i class="fas fa-tools"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-number" id="repair-damages">0</div>
+                                <div class="stat-label">На реставрації</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="damage-stat-card">
+                            <div class="stat-icon damage-cost">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-number" id="total-damage-cost">₴0</div>
+                                <div class="stat-label">Загальна сума штрафів</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="damage-stat-card">
+                            <div class="stat-icon damage-resolved">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-number" id="resolved-damages">0</div>
+                                <div class="stat-label">Вирішено сьогодні</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Damage Report -->
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="damage-section-card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-plus-circle"></i> Швидкий звіт про пошкодження</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="damage-report-form">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Номер замовлення</label>
+                                                <input type="text" class="form-control" id="damage-order-number" 
+                                                       placeholder="Введіть номер замовлення">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Тип пошкодження</label>
+                                                <select class="form-control" id="damage-type">
+                                                    <option value="broken">Зламано</option>
+                                                    <option value="dirty">Забруднено</option>
+                                                    <option value="chipped">Скол</option>
+                                                    <option value="scratched">Подряпано</option>
+                                                    <option value="lost">Втрачено</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>Ступінь пошкодження</label>
+                                                <select class="form-control" id="damage-severity">
+                                                    <option value="minor">Незначне</option>
+                                                    <option value="major">Суттєве</option>
+                                                    <option value="total">Повне знищення</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>Кількість пошкоджених</label>
+                                                <input type="number" class="form-control" id="damage-quantity" min="1" value="1">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>Орієнтовна сума ₴</label>
+                                                <input type="number" class="form-control" id="damage-estimated-cost" step="0.01" min="0">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Опис пошкодження</label>
+                                        <textarea class="form-control" id="damage-description" rows="3" 
+                                                  placeholder="Опишіть характер та обсяг пошкодження..."></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Фото пошкодження</label>
+                                        <input type="file" class="form-control-file" id="damage-photos" multiple accept="image/*">
+                                        <small class="form-text text-muted">Можна завантажити декілька фото</small>
+                                    </div>
+                                    <button class="btn btn-warning btn-block" onclick="createDamageReport()">
+                                        <i class="fas fa-exclamation-triangle"></i> Створити звіт про пошкодження
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Damage Calculator -->
+                    <div class="col-md-4">
+                        <div class="damage-section-card">
+                            <div class="card-header">
+                                <h5><i class="fas fa-calculator"></i> Калькулятор штрафів</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="damage-calculator">
+                                    <div class="calc-result">
+                                        <div class="calc-label">Розрахована сума:</div>
+                                        <div class="calc-amount" id="calculated-damage-amount">₴0</div>
+                                    </div>
+                                    <div class="calc-breakdown">
+                                        <div class="breakdown-item">
+                                            <span>Реставрація:</span>
+                                            <span id="repair-cost">₴0</span>
+                                        </div>
+                                        <div class="breakdown-item">
+                                            <span>Чистка:</span>
+                                            <span id="cleaning-cost">₴0</span>
+                                        </div>
+                                        <div class="breakdown-item total">
+                                            <span>Всього:</span>
+                                            <span id="total-damage-amount">₴0</span>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-info btn-sm btn-block" onclick="recalculateDamage()">
+                                        <i class="fas fa-sync"></i> Перерахувати
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Damages List -->
+                <div class="damage-section-card mt-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5><i class="fas fa-list"></i> Активні пошкодження</h5>
+                        <div class="damage-filters">
+                            <select class="form-control form-control-sm" id="damage-status-filter">
+                                <option value="">Всі статуси</option>
+                                <option value="pending">Очікують оцінки</option>
+                                <option value="repair">На реставрації</option>
+                                <option value="charge">Списано з депозита</option>
+                                <option value="resolved">Вирішено</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="damages-list">
+                            <!-- Damages will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Calendar Tab (існуючий календар залишається) -->
+        <div class="tab-pane fade" id="calendar-content" role="tabpanel">
+            <div class="manager-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-calendar-alt"></i> Календар замовлень</h3>
+                    <div class="calendar-filters">
+                        <select id="calendar-status" class="form-control form-control-sm" style="width: 150px;">
+                            <option value="calendar">Календарні</option>
+                            <option value="processed">Оброблено</option>
+                            <option value="issued">Видано</option>
+                            <option value="all">Всі статуси</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="calendar"></div>
+                    
+                    <!-- Легенда кольорів -->
+                    <div class="calendar-legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #16a34a;"></div>
+                            <span>Видача (календарні)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #2563eb;"></div>
+                            <span>Повернення (календарні)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #9ca3af;"></div>
+                            <span>Інші статуси</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Order Detail Modal -->
+<div class="modal fade" id="orderModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Замовлення <span id="modal-order-number"></span></h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="order-detail-content">
+                <!-- Order details will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Order Modal -->
+<div class="modal fade" id="createOrderModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Створити нове замовлення</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="createOrderForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Ім'я клієнта *</label>
+                                <input type="text" class="form-control" name="customer_name" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Телефон *</label>
+                                <input type="tel" class="form-control" name="customer_phone" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" class="form-control" name="customer_email">
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Дата видачі *</label>
+                                <input type="date" class="form-control" name="issue_date" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Дата повернення *</label>
+                                <input type="date" class="form-control" name="return_date" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Коментар клієнта</label>
+                        <textarea class="form-control" name="customer_comment" rows="2"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Коментар менеджера</label>
+                        <textarea class="form-control" name="manager_comment" rows="2"></textarea>
+                    </div>
+                    
+                    <!-- Order Items -->
+                    <div class="order-items-section">
+                        <h6>Товари в замовленні</h6>
+                        <div id="order-items-list">
+                            <!-- Items will be added here -->
+                        </div>
+                        <button type="button" class="btn btn-secondary" onclick="showAddProductModal()">
+                            <i class="fas fa-plus"></i> Додати товар
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Скасувати</button>
+                <button type="button" class="btn btn-success" onclick="createOrder()">Створити замовлення</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Product Modal -->
+<div class="modal fade" id="addProductModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Додати товар</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="text" class="form-control" id="product-search" placeholder="Пошук товарів...">
+                </div>
+                <div id="products-list">
+                    <!-- Products will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Manager Dashboard Styles */
+.orders-manager-container {
+    padding: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Header Stats */
+.header-stats {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.stat-mini {
+    text-align: center;
+    background: rgba(255,255,255,0.2);
+    padding: 10px 15px;
+    border-radius: 8px;
+    min-width: 70px;
+}
+
+.stat-mini .stat-value {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: white;
+}
+
+.stat-mini .stat-label {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.9);
+    margin-top: 2px;
+}
+
+/* Navigation Tabs */
+.manager-tabs-section {
+    background: white;
+    border-radius: 12px 12px 0 0;
+    margin-bottom: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.manager-nav-tabs {
+    border-bottom: 2px solid #e9ecef;
+    padding: 0 20px;
+}
+
+.manager-nav-tabs .nav-link {
+    background: none;
+    border: none;
+    color: #6c757d;
+    font-weight: 600;
+    padding: 15px 25px;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.manager-nav-tabs .nav-link.active {
+    color: #667eea;
+    background: none;
+    border-bottom: 3px solid #667eea;
+}
+
+.manager-nav-tabs .nav-link:hover {
+    color: #667eea;
+    background: rgba(102, 126, 234, 0.1);
+}
+
+.tab-badge {
+    background: #667eea;
+    color: white;
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: 12px;
+    margin-left: 8px;
+    font-weight: 600;
+}
+
+.manager-nav-tabs .nav-link.active .tab-badge {
+    background: #5a6fd8;
+}
+
+.manager-tab-content {
+    background: white;
+    border-radius: 0 0 12px 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    padding: 25px;
+}
+
+.manager-header-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 25px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.filters-section {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.orders-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.order-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.order-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.order-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+
+.order-status {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-new { background: #e7d4f7; color: #8b5aa0; }
+.status-reserved { background: #cce7ff; color: #0056b3; }
+.status-picked { background: #fff3cd; color: #856404; }
+.status-issued { background: #d4edda; color: #155724; }
+.status-returned { background: #d1ecf1; color: #0c5460; }
+.status-closed { background: #f8d7da; color: #721c24; }
+
+.order-number {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #2c3e50;
+}
+
+.order-customer {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin: 10px 0;
+}
+
+.customer-name {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #495057;
+}
+
+.customer-contact {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.order-dates {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.order-date {
+    background: #f8f9fa;
+    padding: 8px 12px;
+    border-radius: 6px;
+    text-align: center;
+    font-size: 0.85rem;
+}
+
+.order-date-label {
+    font-weight: 600;
+    color: #495057;
+    display: block;
+}
+
+.order-date-value {
+    color: #007bff;
+    font-weight: 500;
+}
+
+.order-financials {
+    background: #f1f3f4;
+    padding: 12px;
+    border-radius: 6px;
+    margin: 15px 0;
+}
+
+.financial-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}
+
+.financial-label {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.financial-value {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.order-comments {
+    margin: 15px 0;
+}
+
+.comment-box {
+    background: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    padding: 10px;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+.comment-box.customer {
+    border-left: 4px solid #007bff;
+}
+
+.comment-box.manager {
+    border-left: 4px solid #28a745;
+}
+
+.order-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.action-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.action-btn:hover {
+    transform: translateY(-1px);
+    text-decoration: none;
+}
+
+.btn-primary { background: #007bff; color: white; }
+.btn-success { background: #28a745; color: white; }
+.btn-warning { background: #ffc107; color: #212529; }
+.btn-info { background: #17a2b8; color: white; }
+.btn-danger { background: #dc3545; color: white; }
+
+.order-items-count {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: #6c757d;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* Modal Styles */
+.modal-xl {
+    max-width: 1200px;
+}
+
+.order-items-section {
+    border-top: 1px solid #e9ecef;
+    padding-top: 20px;
+    margin-top: 20px;
+}
+
+.order-item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    margin-bottom: 8px;
+}
+
+.product-card {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.product-card:hover {
+    background: #f8f9fa;
+    border-color: #007bff;
+}
+
+.product-image {
+    width: 60px;
+    height: 60px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.product-details {
+    flex: 1;
+}
+
+.product-name {
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.product-article {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.product-pricing {
+    text-align: right;
+}
+
+.rent-price {
+    color: #007bff;
+    font-weight: 600;
+}
+
+.deposit-price {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+/* Loading states */
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    color: #6c757d;
+}
+
+.loading i {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Finance Dashboard */
+.finance-stat-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.finance-stat-card .stat-icon {
+    width: 50px;
+    height: 50px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.finance-stat-card .stat-number {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.finance-stat-card .stat-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.finance-section-card {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.finance-section-card .card-header {
+    background: #f8f9fa;
+    padding: 15px 20px;
+    border-bottom: 1px solid #e9ecef;
+    margin-bottom: 0;
+}
+
+.finance-section-card .card-body {
+    padding: 20px;
+}
+
+.order-info-box {
+    background: #e7f3ff;
+    border: 1px solid #b3d9ff;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+/* Damage Dashboard */
+.damage-stat-card {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+}
+
+.damage-stat-card:hover {
+    transform: translateY(-2px);
+}
+
+.damage-pending .stat-icon { background: linear-gradient(135deg, #ffc107, #fd7e14); }
+.damage-repair .stat-icon { background: linear-gradient(135deg, #17a2b8, #007bff); }
+.damage-cost .stat-icon { background: linear-gradient(135deg, #dc3545, #e83e8c); }
+.damage-resolved .stat-icon { background: linear-gradient(135deg, #28a745, #20c997); }
+
+.damage-stat-card .stat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+}
+
+.damage-stat-card .stat-number {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 5px;
+}
+
+.damage-stat-card .stat-label {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.damage-section-card {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.damage-section-card .card-header {
+    background: #f8f9fa;
+    padding: 15px 20px;
+    border-bottom: 1px solid #e9ecef;
+    margin-bottom: 0;
+}
+
+.damage-section-card .card-body {
+    padding: 20px;
+}
+
+/* Damage Calculator */
+.damage-calculator {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.calc-result {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.calc-label {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-bottom: 5px;
+}
+
+.calc-amount {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #dc3545;
+}
+
+.calc-breakdown {
+    border-top: 1px solid #dee2e6;
+    padding-top: 15px;
+}
+
+.breakdown-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+.breakdown-item.total {
+    border-top: 1px solid #dee2e6;
+    padding-top: 8px;
+    margin-top: 8px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+/* Damage List Items */
+.damage-item {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 10px;
+    transition: all 0.2s ease;
+}
+
+.damage-item:hover {
+    background: #e9ecef;
+    border-color: #007bff;
+}
+
+.damage-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.damage-order-number {
+    font-weight: 700;
+    color: #007bff;
+}
+
+.damage-type-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.damage-type-broken { background: #f8d7da; color: #721c24; }
+.damage-type-dirty { background: #fff3cd; color: #856404; }
+.damage-type-chipped { background: #d4edda; color: #155724; }
+.damage-type-lost { background: #d1ecf1; color: #0c5460; }
+
+.damage-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+}
+
+.damage-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.damage-btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .orders-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .header-content {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+    
+    .header-stats {
+        flex-wrap: wrap;
+    }
+    
+    .order-dates {
+        grid-template-columns: 1fr;
+    }
+    
+    .order-actions {
+        flex-direction: column;
+    }
+    
+    .damage-details {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+    
+    .manager-nav-tabs .nav-link {
+        padding: 12px 15px;
+        font-size: 0.9rem;
+    }
+}
+</style>
+
+<script>
+// Orders Manager JavaScript
+let currentPage = 1;
+let currentFilters = {};
+let selectedOrderItems = [];
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    loadOrders();
+    setupEventListeners();
+    setupDateDefaults();
+    loadDashboardStats();
+    setupTabEventListeners();
+});
+
+function setupEventListeners() {
+    // Filter events
+    document.getElementById('status-filter').addEventListener('change', applyFilters);
+    document.getElementById('search-filter').addEventListener('input', debounce(applyFilters, 500));
+    
+    // Product search
+    document.getElementById('product-search').addEventListener('input', debounce(searchProducts, 300));
+}
+
+function setupDateDefaults() {
+    // Set default issue date to tomorrow
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    document.querySelector('input[name="issue_date"]').value = tomorrow.toISOString().split('T')[0];
+    
+    // Set default return date to 3 days from tomorrow
+    const returnDate = new Date(tomorrow);
+    returnDate.setDate(returnDate.getDate() + 2);
+    document.querySelector('input[name="return_date"]').value = returnDate.toISOString().split('T')[0];
+}
+
+async function loadOrders(page = 1) {
+    const container = document.getElementById('orders-container');
+    container.innerHTML = '<div class="loading"><i class="fas fa-spinner"></i> Завантаження замовлень...</div>';
+    
+    try {
+        const params = new URLSearchParams({
+            page: page,
+            per_page: 12,
+            ...currentFilters
+        });
+        
+        const response = await fetch(`/api/manager/orders?${params}`);
+        const data = await response.json();
+        
+        if (data.orders) {
+            renderOrders(data.orders);
+            renderPagination(data.pagination);
+        } else {
+            container.innerHTML = '<div class="text-center"><p>Не вдалося завантажити замовлення</p></div>';
+        }
+    } catch (error) {
+        console.error('Error loading orders:', error);
+        container.innerHTML = '<div class="text-center text-danger"><p>Помилка завантаження замовлень</p></div>';
+    }
+}
+
+function renderOrders(orders) {
+    const container = document.getElementById('orders-container');
+    
+    if (!orders || orders.length === 0) {
+        container.innerHTML = '<div class="text-center"><p>Замовлення не знайдено</p></div>';
+        return;
+    }
+    
+    container.innerHTML = orders.map(order => createOrderCard(order)).join('');
+}
+
+function createOrderCard(order) {
+    const statusClass = `status-${order.status}`;
+    const statusLabel = getStatusLabel(order.status);
+    const itemsCount = order.items ? order.items.length : 0;
+    
+    return `
+        <div class="order-card" onclick="showOrderDetails(${order.id})">
+            <div class="order-items-count">${itemsCount} поз.</div>
+            
+            <div class="order-card-header">
+                <div class="order-number">#${order.number}</div>
+                <div class="order-status ${statusClass}">${statusLabel}</div>
+            </div>
+            
+            <div class="order-customer">
+                <div class="customer-name">${order.customer_name}</div>
+                <div class="customer-contact">
+                    <i class="fas fa-phone"></i> ${order.customer_phone}
+                </div>
+                ${order.customer_email ? `<div class="customer-contact">
+                    <i class="fas fa-envelope"></i> ${order.customer_email}
+                </div>` : ''}
+            </div>
+            
+            <div class="order-dates">
+                <div class="order-date">
+                    <span class="order-date-label">Видача</span>
+                    <span class="order-date-value">${formatDate(order.issue_date)}</span>
+                </div>
+                <div class="order-date">
+                    <span class="order-date-label">Повернення</span>
+                    <span class="order-date-value">${formatDate(order.return_date)}</span>
+                </div>
+            </div>
+            
+            <div class="order-financials">
+                <div class="financial-row">
+                    <span class="financial-label">Сума:</span>
+                    <span class="financial-value">₴${formatMoney(order.subtotal)}</span>
+                </div>
+                <div class="financial-row">
+                    <span class="financial-label">Застава:</span>
+                    <span class="financial-value">₴${formatMoney(order.deposit_total)}</span>
+                </div>
+                ${order.prepaid_amount > 0 ? `
+                <div class="financial-row">
+                    <span class="financial-label">Передплата:</span>
+                    <span class="financial-value">₴${formatMoney(order.prepaid_amount)}</span>
+                </div>` : ''}
+                <div class="financial-row">
+                    <span class="financial-label"><strong>До сплати:</strong></span>
+                    <span class="financial-value"><strong>₴${formatMoney(order.total_amount - order.prepaid_amount)}</strong></span>
+                </div>
+            </div>
+            
+            ${order.customer_comment || order.manager_comment ? `
+            <div class="order-comments">
+                ${order.customer_comment ? `
+                <div class="comment-box customer">
+                    <strong>Клієнт:</strong> ${order.customer_comment}
+                </div>` : ''}
+                ${order.manager_comment ? `
+                <div class="comment-box manager">
+                    <strong>Менеджер:</strong> ${order.manager_comment}
+                </div>` : ''}
+            </div>` : ''}
+            
+            <div class="order-actions" onclick="event.stopPropagation()">
+                ${getOrderActions(order)}
+            </div>
+        </div>
+    `;
+}
+
+function getOrderActions(order) {
+    let actions = [];
+    
+    switch (order.status) {
+        case 'new':
+            actions.push(`<button class="action-btn btn-primary" onclick="reserveOrder(${order.id})"><i class="fas fa-lock"></i> Резервувати</button>`);
+            actions.push(`<button class="action-btn btn-info" onclick="showOrderDetails(${order.id})"><i class="fas fa-edit"></i> Редагувати</button>`);
+            break;
+        case 'reserved':
+        case 'picked':
+            actions.push(`<button class="action-btn btn-success" onclick="issueOrder(${order.id})"><i class="fas fa-hand-holding"></i> Видати</button>`);
+            break;
+        case 'issued':
+            actions.push(`<button class="action-btn btn-warning" onclick="returnOrder(${order.id})"><i class="fas fa-undo"></i> Повернення</button>`);
+            break;
+    }
+    
+    actions.push(`<button class="action-btn btn-info" onclick="showOrderDetails(${order.id})"><i class="fas fa-eye"></i> Деталі</button>`);
+    
+    if (order.status === 'new') {
+        actions.push(`<button class="action-btn btn-danger" onclick="deleteOrder(${order.id})"><i class="fas fa-trash"></i> Видалити</button>`);
+    }
+    
+    return actions.join('');
+}
+
+function getStatusLabel(status) {
+    const labels = {
+        'new': 'Нове замовлення',
+        'reserved': 'Зарезервовано',
+        'picked': 'Зібрано',
+        'issued': 'Видача',
+        'returned': 'Повернення',
+        'closed': 'Закрито',
+        'cancelled': 'Скасовано'
+    };
+    return labels[status] || status;
+}
+
+function applyFilters() {
+    currentFilters = {
+        status: document.getElementById('status-filter').value,
+        date_from: document.getElementById('date-filter').value,
+        search: document.getElementById('search-filter').value
+    };
+    
+    // Remove empty filters
+    Object.keys(currentFilters).forEach(key => {
+        if (!currentFilters[key]) {
+            delete currentFilters[key];
+        }
+    });
+    
+    currentPage = 1;
+    loadOrders(currentPage);
+}
+
+// Order actions
+async function reserveOrder(orderId) {
+    if (!confirm('Зарезервувати замовлення?')) return;
+    
+    try {
+        const response = await fetch(`/api/manager/orders/${orderId}/reserve`, {
+            method: 'POST'
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+            showNotification(data.message, 'success');
+            loadOrders(currentPage);
+        } else {
+            showNotification(data.error, 'error');
+        }
+    } catch (error) {
+        showNotification('Помилка резервування замовлення', 'error');
+    }
+}
+
+async function issueOrder(orderId) {
+    // Show issue modal with deposit payment
+    const depositAmount = prompt('Введіть суму застави для утримання:');
+    if (!depositAmount) return;
+    
+    try {
+        const response = await fetch(`/api/manager/orders/${orderId}/issue`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                deposit_amount: parseFloat(depositAmount),
+                deposit_payment_method: 'cash',
+                warehouse_staff: 'Комірник Віток'
+            })
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+            showNotification(data.message, 'success');
+            loadOrders(currentPage);
+        } else {
+            showNotification(data.error, 'error');
+        }
+    } catch (error) {
+        showNotification('Помилка видачі замовлення', 'error');
+    }
+}
+
+async function returnOrder(orderId) {
+    if (!confirm('Прийняти повернення замовлення?')) return;
+    
+    try {
+        const response = await fetch(`/api/manager/orders/${orderId}/return`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                damages: [], // TODO: Add damage assessment modal
+                reported_by: 'Комірник Віток'
+            })
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+            showNotification(data.message, 'success');
+            loadOrders(currentPage);
+        } else {
+            showNotification(data.error, 'error');
+        }
+    } catch (error) {
+        showNotification('Помилка прийняття повернення', 'error');
+    }
+}
+
+async function deleteOrder(orderId) {
+    if (!confirm('Видалити замовлення? Цю дію неможливо скасувати.')) return;
+    
+    try {
+        const response = await fetch(`/api/manager/orders/${orderId}`, {
+            method: 'DELETE'
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+            showNotification(data.message, 'success');
+            loadOrders(currentPage);
+        } else {
+            showNotification(data.error, 'error');
+        }
+    } catch (error) {
+        showNotification('Помилка видалення замовлення', 'error');
+    }
+}
+
+// Show order details
+async function showOrderDetails(orderId) {
+    try {
+        const response = await fetch(`/api/manager/orders/${orderId}`);
+        const data = await response.json();
+        
+        if (data.order) {
+            renderOrderDetails(data.order);
+            document.getElementById('modal-order-number').textContent = data.order.number;
+            $('#orderModal').modal('show');
+        }
+    } catch (error) {
+        showNotification('Помилка завантаження деталей замовлення', 'error');
+    }
+}
+
+function renderOrderDetails(order) {
+    const content = document.getElementById('order-detail-content');
+    // TODO: Implement detailed order view similar to mockups
+    content.innerHTML = `
+        <div class="order-details-container">
+            <h6>Інформація про замовлення буде тут</h6>
+            <pre>${JSON.stringify(order, null, 2)}</pre>
+        </div>
+    `;
+}
+
+// Create new order
+function showCreateOrderModal() {
+    selectedOrderItems = [];
+    document.getElementById('createOrderForm').reset();
+    setupDateDefaults();
+    renderOrderItems();
+    $('#createOrderModal').modal('show');
+}
+
+async function createOrder() {
+    const form = document.getElementById('createOrderForm');
+    const formData = new FormData(form);
+    
+    if (selectedOrderItems.length === 0) {
+        showNotification('Додайте хоча б один товар до замовлення', 'error');
+        return;
+    }
+    
+    const orderData = {
+        customer_name: formData.get('customer_name'),
+        customer_phone: formData.get('customer_phone'),
+        customer_email: formData.get('customer_email'),
+        issue_date: formData.get('issue_date'),
+        return_date: formData.get('return_date'),
+        customer_comment: formData.get('customer_comment'),
+        manager_comment: formData.get('manager_comment'),
+        items: selectedOrderItems
+    };
+    
+    try {
+        const response = await fetch('/api/manager/orders', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(orderData)
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+            showNotification('Замовлення створено успішно', 'success');
+            $('#createOrderModal').modal('hide');
+            loadOrders(currentPage);
+        } else {
+            showNotification(data.error, 'error');
+        }
+    } catch (error) {
+        showNotification('Помилка створення замовлення', 'error');
+    }
+}
+
+// Product selection
+function showAddProductModal() {
+    $('#addProductModal').modal('show');
+    loadProducts();
+}
+
+async function loadProducts() {
+    const container = document.getElementById('products-list');
+    container.innerHTML = '<div class="loading"><i class="fas fa-spinner"></i> Завантаження товарів...</div>';
+    
+    try {
+        const response = await fetch('/api/manager/products?in_stock=1');
+        const data = await response.json();
+        
+        if (data.products) {
+            renderProducts(data.products);
+        }
+    } catch (error) {
+        container.innerHTML = '<div class="text-danger">Помилка завантаження товарів</div>';
+    }
+}
+
+function renderProducts(products) {
+    const container = document.getElementById('products-list');
+    container.innerHTML = products.map(product => `
+        <div class="product-card" onclick="selectProduct(${JSON.stringify(product).replace(/"/g, '&quot;')})">
+            <div class="product-image">
+                <i class="fas fa-image"></i>
+            </div>
+            <div class="product-details">
+                <div class="product-name">${product.name}</div>
+                <div class="product-article">Артикул: ${product.article || 'N/A'}</div>
+                <div class="text-muted">Склад: ${product.stock_quantity} шт.</div>
+            </div>
+            <div class="product-pricing">
+                <div class="rent-price">₴${formatMoney(product.rent_price_per_day)}/день</div>
+                <div class="deposit-price">Застава: ₴${formatMoney(product.deposit_amount)}</div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function selectProduct(product) {
+    const quantity = prompt(`Кількість для товару "${product.name}":`,'1');
+    if (!quantity || quantity < 1) return;
+    
+    selectedOrderItems.push({
+        product_id: product.opencart_product_id,
+        quantity: parseInt(quantity),
+        name: product.name,
+        article: product.article,
+        rent_price_per_day: product.rent_price_per_day,
+        deposit_amount: product.deposit_amount
+    });
+    
+    renderOrderItems();
+    $('#addProductModal').modal('hide');
+}
+
+function renderOrderItems() {
+    const container = document.getElementById('order-items-list');
+    container.innerHTML = selectedOrderItems.map((item, index) => `
+        <div class="order-item-row">
+            <div>
+                <strong>${item.name}</strong><br>
+                <small>Артикул: ${item.article || 'N/A'}</small>
+            </div>
+            <div>
+                Кількість: ${item.quantity}<br>
+                <small>₴${formatMoney(item.rent_price_per_day)}/день</small>
+            </div>
+            <button class="btn btn-sm btn-danger" onclick="removeOrderItem(${index})">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `).join('');
+}
+
+function removeOrderItem(index) {
+    selectedOrderItems.splice(index, 1);
+    renderOrderItems();
+}
+
+// Sync products
+async function syncProducts() {
+    try {
+        const response = await fetch('/api/manager/products/sync-opencart', {
+            method: 'POST'
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+            showNotification(data.message, 'success');
+        } else {
+            showNotification('Помилка синхронізації', 'error');
+        }
+    } catch (error) {
+        showNotification('Помилка синхронізації товарів', 'error');
+    }
+}
+
+// Utility functions
+function formatDate(dateString) {
+    return new Date(dateString).toLocaleDateString('uk-UA');
+}
+
+function formatMoney(amount) {
+    return parseFloat(amount).toLocaleString('uk-UA', {minimumFractionDigits: 0, maximumFractionDigits: 2});
+}
+
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+function showNotification(message, type = 'info') {
+    // Simple notification - can be enhanced
+    const alertClass = type === 'success' ? 'alert-success' : 
+                      type === 'error' ? 'alert-danger' : 'alert-info';
+    
+    const notification = document.createElement('div');
+    notification.className = `alert ${alertClass} alert-dismissible fade show`;
+    notification.style.position = 'fixed';
+    notification.style.top = '20px';
+    notification.style.right = '20px';
+    notification.style.zIndex = '9999';
+    notification.innerHTML = `
+        ${message}
+        <button type="button" class="close" data-dismiss="alert">
+            <span>&times;</span>
+        </button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+        }
+    }, 5000);
+}
+
+function renderPagination(pagination) {
+    const container = document.getElementById('pagination-container');
+    if (pagination.last_page <= 1) {
+        container.innerHTML = '';
+        return;
+    }
+    
+    let pages = [];
+    for (let i = 1; i <= pagination.last_page; i++) {
+        pages.push(`
+            <button class="btn ${i === pagination.current_page ? 'btn-primary' : 'btn-outline-primary'}" 
+                    onclick="loadOrders(${i})">${i}</button>
+        `);
+    }
+    
+    container.innerHTML = `
+        <div class="d-flex justify-content-center">
+            <div class="btn-group" role="group">
+                ${pages.join('')}
+            </div>
+        </div>
+    `;
+}
+
+// Dashboard Stats
+async function loadDashboardStats() {
+    try {
+        const response = await fetch('/api/manager/dashboard');
+        const data = await response.json();
+        
+        if (data.stats) {
+            updateHeaderStats(data.stats);
+            updateTabBadges(data.stats);
+        }
+    } catch (error) {
+        console.error('Error loading dashboard stats:', error);
+    }
+}
+
+function updateHeaderStats(stats) {
+    document.getElementById('header-new-orders').textContent = stats.new_orders || 0;
+    document.getElementById('header-ready-issue').textContent = stats.ready_for_issue || 0;
+    document.getElementById('header-returns-due').textContent = stats.returns_due || 0;
+    document.getElementById('header-revenue').textContent = '₴' + formatMoney(stats.total_revenue_today || 0);
+}
+
+function updateTabBadges(stats) {
+    document.getElementById('orders-count').textContent = (stats.new_orders + stats.ready_for_issue) || 0;
+    document.getElementById('finance-count').textContent = stats.pending_payments || 0;
+    document.getElementById('damages-count').textContent = stats.pending_damages || 0;
+}
+
+// Tab Management
+function setupTabEventListeners() {
+    // Tab click events
+    document.getElementById('finance-tab').addEventListener('click', function() {
+        loadFinanceData();
+    });
+    
+    document.getElementById('damages-tab').addEventListener('click', function() {
+        loadDamagesData();
+    });
+    
+    document.getElementById('calendar-tab').addEventListener('click', function() {
+        // Calendar already loaded, just refresh if needed
+        if (window.calendar) {
+            window.calendar.refetchEvents();
+        }
+    });
+}
+
+// Finance Module
+async function loadFinanceData() {
+    try {
+        // Load finance statistics
+        const response = await fetch('/api/manager/dashboard');
+        const data = await response.json();
+        
+        if (data.stats) {
+            updateFinanceStats(data.stats);
+        }
+        
+        // Load deposits
+        await loadDeposits();
+        
+        // Load recent transactions  
+        await loadRecentTransactions();
+        
+    } catch (error) {
+        console.error('Error loading finance data:', error);
+    }
+}
+
+function updateFinanceStats(stats) {
+    document.getElementById('total-deposits-held').textContent = '₴' + formatMoney(stats.deposits_held || 0);
+    document.getElementById('total-prepaid').textContent = '₴' + formatMoney(stats.prepaid_today || 0);
+    document.getElementById('pending-payments').textContent = '₴' + formatMoney(stats.pending_payments || 0);
+    document.getElementById('damage-charges').textContent = '₴' + formatMoney(stats.damage_charges || 0);
+}
+
+async function loadDeposits() {
+    try {
+        // Mock data for now
+        const deposits = [
+            { order_number: '20250001', customer: 'Іван Петренко', amount: 1500, status: 'held', date: '2025-01-14' },
+            { order_number: '20250002', customer: 'Марія Іваненко', amount: 2340, status: 'held', date: '2025-01-15' }
+        ];
+        
+        renderDeposits(deposits);
+    } catch (error) {
+        console.error('Error loading deposits:', error);
+    }
+}
+
+function renderDeposits(deposits) {
+    const container = document.getElementById('deposits-list');
+    
+    if (!deposits || deposits.length === 0) {
+        container.innerHTML = '<p class="text-muted">Немає активних депозитів</p>';
+        return;
+    }
+    
+    container.innerHTML = deposits.map(deposit => `
+        <div class="deposit-item">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <strong>#${deposit.order_number}</strong>
+                <span class="badge badge-warning">${deposit.status === 'held' ? 'Утримано' : 'Звільнено'}</span>
+            </div>
+            <div class="small text-muted">${deposit.customer}</div>
+            <div class="d-flex justify-content-between align-items-center mt-2">
+                <span class="font-weight-bold">₴${formatMoney(deposit.amount)}</span>
+                <div class="btn-group btn-group-sm">
+                    <button class="btn btn-success btn-sm" onclick="releaseDeposit('${deposit.order_number}')">
+                        <i class="fas fa-unlock"></i> Звільнити
+                    </button>
+                    <button class="btn btn-danger btn-sm" onclick="withholdDeposit('${deposit.order_number}')">
+                        <i class="fas fa-minus-circle"></i> Утримати
+                    </button>
+                </div>
+            </div>
+        </div>
+        <hr>
+    `).join('');
+}
+
+async function loadRecentTransactions() {
+    try {
+        // Mock data
+        const transactions = [
+            {
+                time: '14:30',
+                order: '20250001', 
+                customer: 'Іван Петренко',
+                type: 'prepaid',
+                amount: 500,
+                method: 'cash',
+                status: 'completed'
+            }
+        ];
+        
+        renderTransactions(transactions);
+    } catch (error) {
+        console.error('Error loading transactions:', error);
+    }
+}
+
+function renderTransactions(transactions) {
+    const tbody = document.getElementById('transactions-tbody');
+    
+    if (!transactions || transactions.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Немає транзакцій</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = transactions.map(tx => `
+        <tr>
+            <td>${tx.time}</td>
+            <td>#${tx.order}</td>
+            <td>${tx.customer}</td>
+            <td>${getPaymentTypeLabel(tx.type)}</td>
+            <td>₴${formatMoney(tx.amount)}</td>
+            <td>${getPaymentMethodLabel(tx.method)}</td>
+            <td><span class="badge badge-${tx.status === 'completed' ? 'success' : 'warning'}">${tx.status}</span></td>
+        </tr>
+    `).join('');
+}
+
+// Damage Module  
+async function loadDamagesData() {
+    try {
+        // Load damage statistics and active damages
+        await loadDamageStats();
+        await loadActiveDamages();
+    } catch (error) {
+        console.error('Error loading damages data:', error);
+    }
+}
+
+async function loadDamageStats() {
+    // Mock stats
+    const stats = {
+        pending: 3,
+        repair: 2, 
+        cost: 1200,
+        resolved: 1
+    };
+    
+    document.getElementById('pending-damages').textContent = stats.pending;
+    document.getElementById('repair-damages').textContent = stats.repair;
+    document.getElementById('total-damage-cost').textContent = '₴' + formatMoney(stats.cost);
+    document.getElementById('resolved-damages').textContent = stats.resolved;
+}
+
+async function loadActiveDamages() {
+    try {
+        // Mock active damages
+        const damages = [
+            {
+                id: 1,
+                order_number: '20250001',
+                customer: 'Іван Петренко',
+                item: 'Свічник',
+                type: 'chipped',
+                severity: 'minor',
+                cost: 150,
+                status: 'pending',
+                date: '2025-01-14'
+            }
+        ];
+        
+        renderActiveDamages(damages);
+    } catch (error) {
+        console.error('Error loading active damages:', error);
+    }
+}
+
+function renderActiveDamages(damages) {
+    const container = document.getElementById('damages-list');
+    
+    if (!damages || damages.length === 0) {
+        container.innerHTML = '<p class="text-muted">Немає активних пошкоджень</p>';
+        return;
+    }
+    
+    container.innerHTML = damages.map(damage => `
+        <div class="damage-item">
+            <div class="damage-item-header">
+                <div class="damage-order-number">#${damage.order_number}</div>
+                <div class="damage-type-badge damage-type-${damage.type}">
+                    ${getDamageTypeLabel(damage.type)}
+                </div>
+            </div>
+            <div class="damage-details">
+                <div>
+                    <strong>Клієнт:</strong><br>
+                    <small>${damage.customer}</small>
+                </div>
+                <div>
+                    <strong>Товар:</strong><br>
+                    <small>${damage.item}</small>
+                </div>
+                <div>
+                    <strong>Сума:</strong><br>
+                    <small>₴${formatMoney(damage.cost)}</small>
+                </div>
+            </div>
+            <div class="damage-actions">
+                <button class="damage-btn btn-success" onclick="approveDamage(${damage.id})">
+                    <i class="fas fa-check"></i> Підтвердити
+                </button>
+                <button class="damage-btn btn-warning" onclick="editDamage(${damage.id})">
+                    <i class="fas fa-edit"></i> Редагувати
+                </button>
+                <button class="damage-btn btn-info" onclick="viewDamagePhotos(${damage.id})">
+                    <i class="fas fa-images"></i> Фото
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Quick Payment
+async function processQuickPayment() {
+    const orderSearch = document.getElementById('payment-order-search').value;
+    const paymentType = document.getElementById('payment-type').value;
+    const amount = parseFloat(document.getElementById('payment-amount').value);
+    const method = document.getElementById('payment-method').value;
+    
+    if (!orderSearch || !amount || amount <= 0) {
+        showNotification('Заповніть всі поля для проведення платежу', 'error');
+        return;
+    }
+    
+    try {
+        // Mock payment processing
+        showNotification('Платіж успішно проведено!', 'success');
+        
+        // Clear form
+        document.getElementById('payment-order-search').value = '';
+        document.getElementById('payment-amount').value = '';
+        
+        // Reload finance data
+        loadFinanceData();
+        
+    } catch (error) {
+        showNotification('Помилка проведення платежу', 'error');
+    }
+}
+
+// Damage Report
+async function createDamageReport() {
+    const orderNumber = document.getElementById('damage-order-number').value;
+    const damageType = document.getElementById('damage-type').value;
+    const severity = document.getElementById('damage-severity').value;
+    const quantity = parseInt(document.getElementById('damage-quantity').value);
+    const estimatedCost = parseFloat(document.getElementById('damage-estimated-cost').value);
+    const description = document.getElementById('damage-description').value;
+    
+    if (!orderNumber || !description) {
+        showNotification('Заповніть обов\\'язкові поля', 'error');
+        return;
+    }
+    
+    try {
+        showNotification('Звіт про пошкодження створено успішно!', 'success');
+        
+        // Clear form
+        document.getElementById('damage-order-number').value = '';
+        document.getElementById('damage-description').value = '';
+        document.getElementById('damage-estimated-cost').value = '';
+        
+        // Reload damages data
+        loadDamagesData();
+        
+    } catch (error) {
+        showNotification('Помилка створення звіту', 'error');
+    }
+}
+
+// Damage Calculator  
+function recalculateDamage() {
+    const damageType = document.getElementById('damage-type').value;
+    const severity = document.getElementById('damage-severity').value;
+    const quantity = parseInt(document.getElementById('damage-quantity').value) || 1;
+    
+    // Mock calculation
+    let repairCost = 0;
+    let cleaningCost = 0;
+    
+    const baseAmount = 100; // Base calculation amount
+    
+    if (damageType === 'dirty') {
+        cleaningCost = baseAmount * 0.1 * quantity;
+    } else {
+        const damageMultiplier = {
+            'broken': 0.8,
+            'chipped': 0.3,
+            'scratched': 0.2,
+            'lost': 1.0
+        }[damageType] || 0.5;
+        
+        const severityMultiplier = {
+            'minor': 0.5,
+            'major': 0.8,
+            'total': 1.0
+        }[severity] || 0.5;
+        
+        repairCost = baseAmount * damageMultiplier * severityMultiplier * quantity;
+    }
+    
+    const totalCost = repairCost + cleaningCost;
+    
+    // Update UI
+    document.getElementById('repair-cost').textContent = '₴' + formatMoney(repairCost);
+    document.getElementById('cleaning-cost').textContent = '₴' + formatMoney(cleaningCost);
+    document.getElementById('total-damage-amount').textContent = '₴' + formatMoney(totalCost);
+    document.getElementById('calculated-damage-amount').textContent = '₴' + formatMoney(totalCost);
+    document.getElementById('damage-estimated-cost').value = totalCost.toFixed(2);
+}
+
+// Utility functions
+function getDamageTypeLabel(type) {
+    const labels = {
+        'broken': 'Зламано',
+        'dirty': 'Забруднено', 
+        'chipped': 'Скол',
+        'scratched': 'Подряпано',
+        'lost': 'Втрачено'
+    };
+    return labels[type] || type;
+}
+
+function getPaymentTypeLabel(type) {
+    const labels = {
+        'prepaid': 'Передплата',
+        'deposit_hold': 'Утримання депозита',
+        'deposit_release': 'Повернення депозита',
+        'damage_charge': 'Штраф за пошкодження'
+    };
+    return labels[type] || type;
+}
+
+function getPaymentMethodLabel(method) {
+    const labels = {
+        'cash': 'Готівка',
+        'card': 'Картка',
+        'online': 'Онлайн',
+        'bank_transfer': 'Переказ'
+    };
+    return labels[method] || method;
+}
+
+// Deposit actions
+async function releaseDeposit(orderNumber) {
+    if (!confirm(`Звільнити депозит для замовлення #${orderNumber}?`)) return;
+    
+    try {
+        showNotification('Депозит успішно звільнено', 'success');
+        loadDeposits();
+    } catch (error) {
+        showNotification('Помилка звільнення депозита', 'error');
+    }
+}
+
+async function withholdDeposit(orderNumber) {
+    const amount = prompt('Введіть суму для утримання:');
+    if (!amount) return;
+    
+    try {
+        showNotification('Депозит частково утримано', 'success');
+        loadDeposits();
+    } catch (error) {
+        showNotification('Помилка утримання депозита', 'error');
+    }
+}
+
+// Damage actions
+async function approveDamage(damageId) {
+    if (!confirm('Підтвердити пошкодження та списати з депозита?')) return;
+    
+    try {
+        showNotification('Пошкодження підтверджено', 'success');
+        loadActiveDamages();
+    } catch (error) {
+        showNotification('Помилка підтвердження', 'error');
+    }
+}
+
+function editDamage(damageId) {
+    // TODO: Open edit damage modal
+    showNotification('Функція редагування буде додана', 'info');
+}
+
+function viewDamagePhotos(damageId) {
+    // TODO: Open photo gallery modal
+    showNotification('Перегляд фото буде додано', 'info');
+}
+
+// Auto-recalculate on damage form changes
+document.addEventListener('DOMContentLoaded', function() {
+    const damageInputs = ['damage-type', 'damage-severity', 'damage-quantity'];
+    damageInputs.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.addEventListener('change', recalculateDamage);
+        }
+    });
+});
+</script>

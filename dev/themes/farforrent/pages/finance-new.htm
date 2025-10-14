@@ -1,0 +1,271 @@
+title = "Фінансова панель"
+url = "/manager/finance-new"
+layout = ""
+is_hidden = 0
+==
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Фінанси - FarforRent</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+    <div class="min-h-screen">
+        <!-- Header -->
+        <div class="bg-white border-b sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-6 py-4">
+                <div class="flex items-center gap-4">
+                    <button onclick="window.location.href='/manager-new'" class="p-2 hover:bg-gray-100 rounded">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <h1 class="text-xl font-bold flex-1">Фінансова панель</h1>
+                    <button onclick="exportData()" class="px-4 py-2 border rounded-lg hover:bg-gray-50">
+                        <i class="fas fa-download mr-2"></i>Експорт
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-6 py-6">
+            <!-- KPIs -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                <div class="bg-white rounded-lg border p-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm text-gray-600">Загальний дохід</span>
+                        <i class="fas fa-arrow-trend-up text-green-600"></i>
+                    </div>
+                    <div class="text-3xl font-bold" id="kpi-revenue">₴0</div>
+                    <div class="text-xs text-green-600 mt-1">
+                        <i class="fas fa-arrow-up mr-1"></i>+12%
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg border p-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm text-gray-600">Депозити (холд)</span>
+                        <i class="fas fa-shield-alt text-purple-600"></i>
+                    </div>
+                    <div class="text-3xl font-bold" id="kpi-deposits">₴0</div>
+                    <div class="text-xs text-gray-500 mt-1" id="kpi-deposits-count">0 активних</div>
+                </div>
+                
+                <div class="bg-white rounded-lg border p-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm text-gray-600">Очікують оплати</span>
+                        <i class="fas fa-clock text-orange-600"></i>
+                    </div>
+                    <div class="text-3xl font-bold" id="kpi-pending">₴0</div>
+                    <div class="text-xs text-gray-500 mt-1" id="kpi-pending-count">0 рахунків</div>
+                </div>
+                
+                <div class="bg-white rounded-lg border p-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm text-gray-600">Штрафи</span>
+                        <i class="fas fa-exclamation-triangle text-red-600"></i>
+                    </div>
+                    <div class="text-3xl font-bold" id="kpi-penalties">₴0</div>
+                    <div class="text-xs text-gray-500 mt-1" id="kpi-penalties-count">0 випадків</div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="bg-white rounded-lg border">
+                <div class="border-b">
+                    <div class="flex gap-4 px-6">
+                        <button class="tab-btn active py-4 border-b-2 border-purple-600 font-medium text-purple-600" onclick="switchTab('transactions')">
+                            Транзакції
+                        </button>
+                        <button class="tab-btn py-4 border-b-2 border-transparent font-medium text-gray-600 hover:text-gray-900" onclick="switchTab('deposits')">
+                            Депозити
+                        </button>
+                        <button class="tab-btn py-4 border-b-2 border-transparent font-medium text-gray-600 hover:text-gray-900" onclick="switchTab('invoices')">
+                            Рахунки
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="p-6 border-b">
+                    <div class="flex gap-4">
+                        <div class="relative flex-1">
+                            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                            <input 
+                                type="text" 
+                                id="search"
+                                placeholder="Пошук..."
+                                class="w-full pl-10 pr-4 py-2 border rounded-lg"
+                                oninput="filterData()"
+                            >
+                        </div>
+                        <select id="period" class="border rounded-lg px-4 py-2" onchange="filterData()">
+                            <option value="today">Сьогодні</option>
+                            <option value="week">Ця неділя</option>
+                            <option value="month">Цей місяць</option>
+                            <option value="all">Весь час</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Content -->
+                <div id="content" class="p-6">
+                    <div class="text-center py-12 text-gray-500">
+                        <i class="fas fa-spinner fa-spin text-4xl mb-4"></i>
+                        <p>Завантаження...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentTab = 'transactions';
+        let allData = { transactions: [], deposits: [], invoices: [] };
+
+        async function loadData() {
+            try {
+                // Load transactions
+                const transResp = await fetch('/api/manager/finance/ledger');
+                allData.transactions = await transResp.json();
+                
+                // Load deposits
+                const depResp = await fetch('/api/manager/finance/deposits');
+                allData.deposits = await depResp.json();
+                
+                updateKPIs();
+                renderContent();
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('content').innerHTML = `
+                    <div class="text-center py-12 text-red-500">
+                        <i class="fas fa-exclamation-triangle text-4xl mb-4"></i>
+                        <p>Помилка завантаження даних</p>
+                    </div>
+                `;
+            }
+        }
+
+        function updateKPIs() {
+            // Calculate totals
+            const revenue = allData.transactions
+                .filter(t => t.type === 'rent_payment')
+                .reduce((sum, t) => sum + parseFloat(t.amount || 0), 0);
+            
+            const depositsTotal = allData.deposits
+                .filter(d => d.status === 'held')
+                .reduce((sum, d) => sum + parseFloat(d.amount || 0), 0);
+            
+            document.getElementById('kpi-revenue').textContent = '₴' + revenue.toLocaleString('uk-UA');
+            document.getElementById('kpi-deposits').textContent = '₴' + depositsTotal.toLocaleString('uk-UA');
+            document.getElementById('kpi-deposits-count').textContent = 
+                allData.deposits.filter(d => d.status === 'held').length + ' активних';
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            
+            document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+                if (['transactions', 'deposits', 'invoices'][i] === tab) {
+                    btn.classList.add('active', 'border-purple-600', 'text-purple-600');
+                    btn.classList.remove('border-transparent', 'text-gray-600');
+                } else {
+                    btn.classList.remove('active', 'border-purple-600', 'text-purple-600');
+                    btn.classList.add('border-transparent', 'text-gray-600');
+                }
+            });
+            
+            renderContent();
+        }
+
+        function renderContent() {
+            const container = document.getElementById('content');
+            
+            if (currentTab === 'transactions') {
+                renderTransactions(container);
+            } else if (currentTab === 'deposits') {
+                renderDeposits(container);
+            } else {
+                container.innerHTML = '<div class="text-center py-8 text-gray-500">Розробка...</div>';
+            }
+        }
+
+        function renderTransactions(container) {
+            if (allData.transactions.length === 0) {
+                container.innerHTML = '<div class="text-center py-8 text-gray-500">Немає транзакцій</div>';
+                return;
+            }
+            
+            container.innerHTML = allData.transactions.map(t => `
+                <div class="border-b py-4 hover:bg-gray-50">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-4 flex-1">
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center ${
+                                t.type === 'rent_payment' ? 'bg-green-100' : 'bg-orange-100'
+                            }">
+                                <i class="fas fa-${t.type === 'rent_payment' ? 'arrow-up' : 'arrow-down'} text-${
+                                    t.type === 'rent_payment' ? 'green' : 'orange'
+                                }-600"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="font-semibold">${t.type === 'rent_payment' ? 'Оплата оренди' : 'Повернення'}</div>
+                                <div class="text-sm text-gray-600">Замовлення №${t.order_id}</div>
+                                <div class="text-xs text-gray-500">${t.paid_at || new Date().toLocaleDateString('uk-UA')}</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-lg font-bold ${
+                                t.type === 'rent_payment' ? 'text-green-600' : 'text-orange-600'
+                            }">
+                                ${t.type === 'rent_payment' ? '+' : '-'}₴${parseFloat(t.amount || 0).toLocaleString('uk-UA')}
+                            </div>
+                            <div class="text-xs text-gray-500">${t.payment_method || 'Картка'}</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderDeposits(container) {
+            if (allData.deposits.length === 0) {
+                container.innerHTML = '<div class="text-center py-8 text-gray-500">Немає депозитів</div>';
+                return;
+            }
+            
+            container.innerHTML = allData.deposits.map(d => `
+                <div class="border rounded-lg p-4 mb-4 hover:shadow-md transition-shadow">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="px-3 py-1 rounded-full text-xs font-semibold ${
+                                    d.status === 'held' ? 'bg-purple-100 text-purple-700' : 
+                                    d.status === 'refunded' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'
+                                }">
+                                    ${d.status === 'held' ? 'Утримано' : d.status === 'refunded' ? 'Повернуто' : d.status}
+                                </span>
+                                <span class="font-semibold">№${d.order_id}</span>
+                            </div>
+                            <div class="text-sm text-gray-600">${d.notes || 'Депозит'}</div>
+                            <div class="text-xs text-gray-500 mt-1">${d.held_at || new Date().toLocaleDateString('uk-UA')}</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-xl font-bold text-purple-600">₴${parseFloat(d.amount || 0).toLocaleString('uk-UA')}</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterData() {
+            renderContent();
+        }
+
+        function exportData() {
+            alert('📄 Експорт даних в Excel');
+        }
+
+        loadData();
+    </script>
+</body>
+</html>

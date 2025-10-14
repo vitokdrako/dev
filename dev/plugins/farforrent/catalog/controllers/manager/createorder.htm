@@ -1,0 +1,467 @@
+<!-- Create New Order -->
+<div class="layout-row min-size">
+    <div class="layout-cell">
+        <div class="layout-relative">
+            <h1>
+                <i class="icon-plus"></i>
+                Створити замовлення
+                <small>Нове замовлення на оренду</small>
+            </h1>
+        </div>
+    </div>
+</div>
+
+<div class="layout-row">
+    <div class="layout-cell">
+        <div class="control-toolbar">
+            <div class="toolbar-item">
+                <a href="<?= Backend::url('farforrent/rental/manager') ?>" class="btn btn-default">
+                    <i class="icon-arrow-left"></i> Назад до дашборду
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="layout-row">
+    <div class="layout-cell">
+        <?= Form::open(['data-request' => 'onCreateOrder']) ?>
+        
+        <div class="layout layout-stack">
+            <!-- Customer Information -->
+            <div class="layout-row">
+                <div class="layout-cell">
+                    <div class="form-preview">
+                        <div class="form-preview-header">
+                            <h3><i class="icon-user"></i> Інформація про клієнта</h3>
+                        </div>
+                        <div class="form-preview-content">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Існуючий клієнт</label>
+                                        <select name="customer_id" class="form-control" id="customer-select">
+                                            <option value="">Оберіть клієнта або створіть нового</option>
+                                            <?php foreach ($customers as $customer): ?>
+                                                <option value="<?= $customer->id ?>" 
+                                                        data-firstname="<?= $customer->first_name ?>"
+                                                        data-lastname="<?= $customer->last_name ?>"
+                                                        data-phone="<?= $customer->phone ?>"
+                                                        data-email="<?= $customer->email ?>"
+                                                        data-discount="<?= $customer->discount_percent ?>">
+                                                    <?= $customer->full_name ?> (<?= $customer->phone ?>)
+                                                    <?php if ($customer->discount_percent > 0): ?>
+                                                        - Знижка <?= $customer->discount_percent ?>%
+                                                    <?php endif ?>
+                                                </option>
+                                            <?php endforeach ?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Телефон *</label>
+                                        <input type="tel" name="customer_phone" class="form-control" required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Ім'я *</label>
+                                        <input type="text" name="customer_firstname" class="form-control" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Прізвище *</label>
+                                        <input type="text" name="customer_lastname" class="form-control" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Email</label>
+                                        <input type="email" name="customer_email" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Адреса доставки</label>
+                                <textarea name="delivery_address" class="form-control" rows="2"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rental Dates -->
+            <div class="layout-row">
+                <div class="layout-cell">
+                    <div class="form-preview">
+                        <div class="form-preview-header">
+                            <h3><i class="icon-calendar"></i> Дати оренди</h3>
+                        </div>
+                        <div class="form-preview-content">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Дата початку *</label>
+                                        <input type="date" name="rental_start_date" class="form-control" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Дата закінчення *</label>
+                                        <input type="date" name="rental_end_date" class="form-control" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Кількість днів</label>
+                                        <input type="number" id="rental-days" class="form-control" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>&nbsp;</label>
+                                        <button type="button" class="btn btn-info btn-block" id="check-availability">
+                                            <i class="icon-search"></i> Перевірити наявність
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products Selection -->
+            <div class="layout-row">
+                <div class="layout-cell">
+                    <div class="form-preview">
+                        <div class="form-preview-header">
+                            <h3><i class="icon-cubes"></i> Товари для оренди</h3>
+                            <div class="form-buttons">
+                                <button type="button" class="btn btn-success" id="add-product">
+                                    <i class="icon-plus"></i> Додати товар
+                                </button>
+                            </div>
+                        </div>
+                        <div class="form-preview-content">
+                            <div id="products-list">
+                                <!-- Products will be added here dynamically -->
+                                <p class="no-data">Додайте товари до замовлення</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="layout-row">
+                <div class="layout-cell">
+                    <div class="form-preview">
+                        <div class="form-preview-header">
+                            <h3><i class="icon-calculator"></i> Розрахунок замовлення</h3>
+                        </div>
+                        <div class="form-preview-content">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="form-group">
+                                        <label>Коментар клієнта</label>
+                                        <textarea name="customer_comment" class="form-control" rows="2"></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Коментар менеджера</label>
+                                        <textarea name="manager_comment" class="form-control" rows="2"></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="order-summary">
+                                        <div class="summary-row">
+                                            <span>Підсумок:</span>
+                                            <strong id="order-subtotal">₴ 0</strong>
+                                        </div>
+                                        <div class="summary-row discount-row" style="display: none;">
+                                            <span>Знижка (<span id="discount-percent">0</span>%):</span>
+                                            <strong id="order-discount">- ₴ 0</strong>
+                                        </div>
+                                        <div class="summary-row total-row">
+                                            <span>До сплати:</span>
+                                            <strong id="order-total">₴ 0</strong>
+                                        </div>
+                                        <div class="summary-row">
+                                            <span>Застава:</span>
+                                            <strong id="order-deposit">₴ 0</strong>
+                                        </div>
+                                        <hr>
+                                        <div class="summary-row">
+                                            <span>Разом з заставою:</span>
+                                            <strong id="order-grand-total">₴ 0</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="layout-row">
+                <div class="layout-cell">
+                    <div class="form-buttons">
+                        <input type="hidden" name="order_items" id="order-items-json" value="[]">
+                        <button type="submit" name="create_order" value="1" class="btn btn-primary">
+                            <i class="icon-check"></i> Створити замовлення
+                        </button>
+                        <a href="<?= Backend::url('farforrent/rental/manager') ?>" class="btn btn-default">
+                            Скасувати
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <?= Form::close() ?>
+    </div>
+</div>
+
+<!-- Product Selection Modal -->
+<div class="modal fade" id="product-modal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Обрати товар</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Товар</label>
+                    <select id="modal-product-select" class="form-control">
+                        <option value="">Оберіть товар</option>
+                        <?php foreach ($productVariants as $variant): ?>
+                            <option value="<?= $variant->id ?>" 
+                                    data-product-name="<?= e($variant->product->name) ?>"
+                                    data-rent-price="<?= $variant->rent_price ?>"
+                                    data-deposit="<?= $variant->deposit_amount ?>"
+                                    data-available="<?= $variant->available_quantity ?>">
+                                <?= e($variant->product->name) ?> 
+                                (₴<?= number_format($variant->rent_price) ?>/день, 
+                                 застава ₴<?= number_format($variant->deposit_amount) ?>)
+                            </option>
+                        <?php endforeach ?>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Кількість</label>
+                    <input type="number" id="modal-quantity" class="form-control" min="1" value="1">
+                </div>
+                <div class="availability-info" style="display: none;">
+                    <div class="alert alert-info">
+                        Доступно: <span id="available-qty"></span> шт.
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="add-product-confirm">Додати</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Скасувати</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Order management JavaScript
+var orderItems = [];
+var rentalDays = 1;
+var customerDiscount = 0;
+
+$(document).ready(function() {
+    // Customer selection
+    $('#customer-select').on('change', function() {
+        var selected = $(this).find(':selected');
+        if (selected.val()) {
+            $('input[name="customer_firstname"]').val(selected.data('firstname'));
+            $('input[name="customer_lastname"]').val(selected.data('lastname'));
+            $('input[name="customer_phone"]').val(selected.data('phone'));
+            $('input[name="customer_email"]').val(selected.data('email'));
+            customerDiscount = selected.data('discount') || 0;
+        } else {
+            $('input[name="customer_firstname"]').val('');
+            $('input[name="customer_lastname"]').val('');
+            $('input[name="customer_phone"]').val('');
+            $('input[name="customer_email"]').val('');
+            customerDiscount = 0;
+        }
+        updateOrderSummary();
+    });
+
+    // Date change handlers
+    $('input[name="rental_start_date"], input[name="rental_end_date"]').on('change', function() {
+        calculateRentalDays();
+    });
+
+    // Add product button
+    $('#add-product').on('click', function() {
+        $('#product-modal').modal('show');
+    });
+
+    // Product selection in modal
+    $('#modal-product-select').on('change', function() {
+        var selected = $(this).find(':selected');
+        if (selected.val()) {
+            $('#available-qty').text(selected.data('available'));
+            $('.availability-info').show();
+        } else {
+            $('.availability-info').hide();
+        }
+    });
+
+    // Add product confirmation
+    $('#add-product-confirm').on('click', function() {
+        var variantId = $('#modal-product-select').val();
+        var selected = $('#modal-product-select').find(':selected');
+        var quantity = parseInt($('#modal-quantity').val()) || 1;
+        
+        if (!variantId) {
+            alert('Оберіть товар');
+            return;
+        }
+        
+        var available = parseInt(selected.data('available')) || 0;
+        if (quantity > available) {
+            alert('Недостатньо товару на складі');
+            return;
+        }
+
+        addProductToOrder({
+            variant_id: variantId,
+            product_name: selected.data('product-name'),
+            rent_price: parseFloat(selected.data('rent-price')),
+            deposit: parseFloat(selected.data('deposit')),
+            quantity: quantity,
+            available: available
+        });
+
+        $('#product-modal').modal('hide');
+        $('#modal-product-select').val('');
+        $('#modal-quantity').val(1);
+        $('.availability-info').hide();
+    });
+});
+
+function calculateRentalDays() {
+    var startDate = new Date($('input[name="rental_start_date"]').val());
+    var endDate = new Date($('input[name="rental_end_date"]').val());
+    
+    if (startDate && endDate && endDate >= startDate) {
+        rentalDays = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+        $('#rental-days').val(rentalDays);
+        updateOrderSummary();
+    }
+}
+
+function addProductToOrder(product) {
+    // Check if product already exists
+    var existingIndex = orderItems.findIndex(item => item.variant_id === product.variant_id);
+    
+    if (existingIndex >= 0) {
+        orderItems[existingIndex].quantity += product.quantity;
+    } else {
+        orderItems.push(product);
+    }
+    
+    updateProductsList();
+    updateOrderSummary();
+}
+
+function removeProductFromOrder(variantId) {
+    orderItems = orderItems.filter(item => item.variant_id !== variantId);
+    updateProductsList();
+    updateOrderSummary();
+}
+
+function updateProductQuantity(variantId, quantity) {
+    var item = orderItems.find(item => item.variant_id === variantId);
+    if (item) {
+        item.quantity = Math.max(1, Math.min(quantity, item.available));
+        updateProductsList();
+        updateOrderSummary();
+    }
+}
+
+function updateProductsList() {
+    var html = '';
+    
+    if (orderItems.length === 0) {
+        html = '<p class="no-data">Додайте товари до замовлення</p>';
+    } else {
+        html += '<div class="table-container">';
+        html += '<table class="table table-striped">';
+        html += '<thead><tr>';
+        html += '<th>Товар</th><th>Ціна/день</th><th>Кількість</th><th>Застава</th><th>Сума</th><th></th>';
+        html += '</tr></thead><tbody>';
+        
+        orderItems.forEach(function(item, index) {
+            var subtotal = item.rent_price * item.quantity * rentalDays;
+            var deposit = item.deposit * item.quantity;
+            
+            html += '<tr>';
+            html += '<td>' + item.product_name + '</td>';
+            html += '<td>₴ ' + formatNumber(item.rent_price) + '</td>';
+            html += '<td>';
+            html += '<input type="number" class="form-control input-sm" value="' + item.quantity + '" ';
+            html += 'min="1" max="' + item.available + '" style="width: 80px;" ';
+            html += 'onchange="updateProductQuantity(\'' + item.variant_id + '\', this.value)">';
+            html += '</td>';
+            html += '<td>₴ ' + formatNumber(deposit) + '</td>';
+            html += '<td>₴ ' + formatNumber(subtotal) + '</td>';
+            html += '<td>';
+            html += '<button type="button" class="btn btn-sm btn-danger" ';
+            html += 'onclick="removeProductFromOrder(\'' + item.variant_id + '\')">';
+            html += '<i class="icon-trash"></i></button>';
+            html += '</td>';
+            html += '</tr>';
+        });
+        
+        html += '</tbody></table></div>';
+    }
+    
+    $('#products-list').html(html);
+    $('#order-items-json').val(JSON.stringify(orderItems));
+}
+
+function updateOrderSummary() {
+    var subtotal = 0;
+    var totalDeposit = 0;
+    
+    orderItems.forEach(function(item) {
+        subtotal += item.rent_price * item.quantity * rentalDays;
+        totalDeposit += item.deposit * item.quantity;
+    });
+    
+    var discountAmount = subtotal * (customerDiscount / 100);
+    var total = subtotal - discountAmount;
+    var grandTotal = total + totalDeposit;
+    
+    $('#order-subtotal').text('₴ ' + formatNumber(subtotal));
+    $('#order-total').text('₴ ' + formatNumber(total));
+    $('#order-deposit').text('₴ ' + formatNumber(totalDeposit));
+    $('#order-grand-total').text('₴ ' + formatNumber(grandTotal));
+    
+    if (customerDiscount > 0) {
+        $('#discount-percent').text(customerDiscount);
+        $('#order-discount').text('- ₴ ' + formatNumber(discountAmount));
+        $('.discount-row').show();
+    } else {
+        $('.discount-row').hide();
+    }
+}
+
+function formatNumber(num) {
+    return Math.round(num).toLocaleString('uk-UA');
+}
+</script>

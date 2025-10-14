@@ -1,0 +1,310 @@
+/* Manager Dashboard Styles */
+
+.manager-card {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    min-height: 400px;
+}
+
+.manager-card .card-header {
+    background: #f8f9fa;
+    padding: 15px 20px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.manager-card .card-header h4 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.manager-card .card-header i {
+    margin-right: 8px;
+    color: #666;
+}
+
+.manager-card .badge {
+    background: #6c757d;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.manager-card .card-body {
+    padding: 0;
+    max-height: 340px;
+    overflow-y: auto;
+}
+
+/* Card Type Colors */
+.manager-card-new .card-header {
+    background: #e3f2fd;
+    border-color: #2196f3;
+}
+
+.manager-card-new .badge {
+    background: #2196f3;
+}
+
+.manager-card-issue .card-header {
+    background: #fff3e0;
+    border-color: #ff9800;
+}
+
+.manager-card-issue .badge {
+    background: #ff9800;
+}
+
+.manager-card-return .card-header {
+    background: #f3e5f5;
+    border-color: #9c27b0;
+}
+
+.manager-card-return .badge {
+    background: #9c27b0;
+}
+
+.manager-card-process .card-header {
+    background: #ffebee;
+    border-color: #f44336;
+}
+
+.manager-card-process .badge {
+    background: #f44336;
+}
+
+/* Order Items in Cards */
+.order-item {
+    padding: 15px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.2s ease;
+}
+
+.order-item:hover {
+    background: #f8f9fa;
+}
+
+.order-item:last-child {
+    border-bottom: none;
+}
+
+.order-info {
+    flex: 1;
+}
+
+.order-info strong {
+    font-size: 14px;
+    color: #333;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.customer-name {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 6px;
+}
+
+.order-details {
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 4px;
+}
+
+.order-details .amount {
+    color: #2e7d32;
+    font-weight: 600;
+    margin-right: 10px;
+}
+
+.order-details .deposit {
+    color: #1976d2;
+}
+
+.order-dates {
+    font-size: 12px;
+    color: #666;
+}
+
+.order-dates.return-date .overdue {
+    color: #f44336;
+    font-weight: 600;
+    margin-left: 8px;
+}
+
+.order-actions {
+    margin-left: 15px;
+}
+
+.no-data {
+    padding: 40px 20px;
+    text-align: center;
+    color: #999;
+    font-style: italic;
+}
+
+/* Order Summary Styles */
+.order-summary {
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 20px;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.summary-row:last-child {
+    border-bottom: none;
+}
+
+.summary-row.total-row {
+    font-size: 18px;
+    font-weight: 600;
+    color: #2e7d32;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+}
+
+.summary-row.discount-row {
+    color: #f44336;
+}
+
+/* Product Modal Styles */
+.availability-info .alert {
+    margin-top: 15px;
+    margin-bottom: 0;
+}
+
+/* Statistics Cards */
+.report-widget {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.report-widget-header h3 {
+    font-size: 32px;
+    font-weight: 700;
+    margin: 0 0 5px 0;
+    color: white;
+}
+
+.report-widget-header p {
+    margin: 0;
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .manager-card {
+        min-height: auto;
+    }
+    
+    .order-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .order-actions {
+        margin-left: 0;
+        margin-top: 10px;
+        width: 100%;
+    }
+    
+    .order-actions .btn {
+        width: 100%;
+    }
+}
+
+/* Form Preview Enhancements */
+.form-preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.form-preview-header .form-buttons {
+    margin: 0;
+}
+
+/* Table Styles for Product List */
+.table-container {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    border-top: none;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+/* Button Styles */
+.btn-sm {
+    padding: 4px 8px;
+    font-size: 12px;
+}
+
+/* Alert Styles */
+.alert-info {
+    background: #e3f2fd;
+    border-color: #2196f3;
+    color: #1565c0;
+}
+
+/* Loading States */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #333;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

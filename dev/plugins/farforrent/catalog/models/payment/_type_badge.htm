@@ -1,0 +1,11 @@
+<?php
+$badges = [
+    'rent_payment' => ['label' => 'Оренда', 'class' => 'badge-success'],
+    'deposit_hold' => ['label' => 'Депозит', 'class' => 'badge-warning'],
+    'deposit_refund' => ['label' => 'Повернення', 'class' => 'badge-info'],
+    'invoice_payment' => ['label' => 'Рахунок', 'class' => 'badge-primary'],
+    'prepayment' => ['label' => 'Передоплата', 'class' => 'badge-secondary']
+];
+$badge = $badges[$record->type] ?? ['label' => $record->type, 'class' => 'badge-default'];
+?>
+<span class="badge <?= $badge['class'] ?>"><?= $badge['label'] ?></span>

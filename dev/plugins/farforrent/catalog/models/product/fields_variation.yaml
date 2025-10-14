@@ -1,0 +1,78 @@
+fields:
+  image:
+    label: Фото
+    type: fileupload
+    mode: image
+    fileTypes: jpg,jpeg,png,webp
+    useCaption: false
+    thumbOptions:
+      mode: crop
+      auto: true
+
+  sku:
+    label: SKU
+    type: text
+    span: right
+    required: true
+
+  price:
+    label: Ціна
+    type: number
+    min: 0
+    span: left
+    required: true
+
+  rent_price:
+    label: Оренда (auto)
+    type: number
+    readOnly: true
+    span: right
+
+  deposit:
+    label: Застава (auto)
+    type: number
+    readOnly: true
+    span: right
+
+  size:
+    label: Size (текст)
+    type: text
+    span: left
+
+  height:
+    label: Висота
+    type: number
+    span: left
+
+  width:
+    label: Ширина
+    type: number
+    span: left
+
+  diameter:
+    label: Діаметр
+    type: number
+    span: left
+
+  length:
+    label: Довжина
+    type: number
+    span: left
+
+  status:
+    label: Статус
+    type: dropdown
+    options:
+      available: Доступний
+      rented: В оренді
+      damaged: Пошкоджений
+      in_progress: На обробці
+      for_sale: На продаж
+    default: available
+    span: right
+
+  barcode:
+    label: Штрихкод (auto)
+    type: text
+    readOnly: true
+    span: right

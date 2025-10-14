@@ -1,0 +1,22 @@
+fields:
+    name_ua:
+        label: Назва
+        span: left
+        required: 1
+        type: text
+    name_en:
+        label: Name
+        span: right
+        type: text
+    slug:
+        label: Slug
+        span: left
+        preset:
+            field: name_ua
+            type: ''
+        type: text
+    image:
+        label: Зображення
+        mode: image
+        span: right
+        type: mediafinder

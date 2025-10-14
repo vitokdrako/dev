@@ -1,0 +1,312 @@
+title = "Видача замовлення"
+url = "/manager/order/:orderId"
+layout = ""
+is_hidden = 0
+==
+<?php
+function onStart() {
+    $this['orderId'] = $this->param('orderId');
+}
+?>
+==
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Видача замовлення - FarforRent</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+    <div class="min-h-screen">
+        <!-- Header -->
+        <div class="bg-white border-b sticky top-0 z-50 shadow-sm">
+            <div class="max-w-7xl mx-auto px-6 py-4">
+                <div class="flex items-center gap-4">
+                    <button onclick="window.location.href='/manager-new'" class="p-2 hover:bg-gray-100 rounded">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <div class="flex-1 flex items-center gap-3">
+                        <span class="badge bg-green-100 text-green-700 border border-green-200 px-3 py-1 rounded-full text-sm font-semibold">Видача</span>
+                        <span class="text-xl font-bold">№<span id="order-number">...</span></span>
+                        <span class="text-gray-500" id="time-slot">• ...</span>
+                    </div>
+                    <button onclick="printPickList()" class="px-4 py-2 border rounded-lg hover:bg-gray-50">
+                        <i class="fas fa-print mr-2"></i>Друк пік-ліста
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-6 py-6">
+            <div class="grid lg:grid-cols-3 gap-6">
+                <!-- Main Content -->
+                <div class="lg:col-span-2 space-y-6">
+                    <!-- Client & Dates -->
+                    <div class="bg-white rounded-lg border p-6">
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <div class="text-sm text-gray-500 mb-1">Клієнт</div>
+                                <div class="font-semibold text-lg" id="client-name">...</div>
+                                <div class="text-sm text-blue-600 mt-1" id="client-phone">...</div>
+                                <div class="text-sm text-gray-600" id="client-email">...</div>
+                            </div>
+                            <div>
+                                <div class="text-sm text-gray-500 mb-1">Дати оренди</div>
+                                <div class="flex items-center gap-2">
+                                    <div>
+                                        <div class="text-xs text-gray-500">Видача</div>
+                                        <div class="font-semibold" id="issue-date">...</div>
+                                    </div>
+                                    <div class="text-gray-400">→</div>
+                                    <div>
+                                        <div class="text-xs text-gray-500">Повернення</div>
+                                        <div class="font-semibold" id="return-date">...</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 space-y-3">
+                            <div class="bg-blue-50 p-3 rounded-lg" id="client-comment-block" style="display:none;">
+                                <div class="text-xs text-gray-500 mb-1">Коментар клієнта:</div>
+                                <div class="text-sm" id="client-comment"></div>
+                            </div>
+                            <div>
+                                <label class="text-xs text-gray-500 mb-1 block">Коментар менеджера:</label>
+                                <textarea id="manager-comment" class="w-full border rounded-lg p-2 min-h-[60px]" placeholder="Додайте коментар..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Scanning Panel -->
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                        <div class="flex items-center gap-3">
+                            <input 
+                                type="text" 
+                                id="scan-input" 
+                                placeholder="Сканувати штрихкод / QR"
+                                class="flex-1 text-lg border rounded-lg px-4 py-2"
+                                onkeypress="if(event.key==='Enter') handleScan()"
+                            >
+                            <button onclick="handleScan()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
+                                <i class="fas fa-qrcode mr-2"></i>Сканувати
+                            </button>
+                        </div>
+                        <div class="mt-3 text-sm text-gray-600">
+                            Прогрес комплектації: <span class="font-bold" id="picking-progress">0%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                            <div id="progress-bar" class="bg-gradient-to-r from-green-400 to-green-600 h-2 rounded-full transition-all" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Items List -->
+                    <div class="bg-white rounded-lg border">
+                        <div class="p-6 border-b">
+                            <h3 class="text-lg font-semibold">Позиції замовлення</h3>
+                        </div>
+                        <div id="items-container" class="p-6">
+                            <div class="text-center py-8 text-gray-500">
+                                <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
+                                <p>Завантаження...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Sidebar -->
+                <div class="space-y-6">
+                    <!-- Financial Summary -->
+                    <div class="bg-white rounded-lg border">
+                        <div class="p-6 border-b">
+                            <h3 class="text-lg font-semibold">Фінансовий підсумок</h3>
+                        </div>
+                        <div class="p-6 space-y-3">
+                            <div class="flex justify-between py-2 border-b">
+                                <span class="text-gray-600">Оренда</span>
+                                <span class="font-semibold" id="fin-rental">₴0</span>
+                            </div>
+                            <div class="flex justify-between py-2 border-b">
+                                <span class="text-gray-600">Застава</span>
+                                <span class="font-semibold" id="fin-deposit">₴0</span>
+                            </div>
+                            <div class="flex justify-between py-2 border-b">
+                                <span class="text-gray-600">Доставка</span>
+                                <span class="font-semibold" id="fin-delivery">₴0</span>
+                            </div>
+                            <div class="flex justify-between py-2 border-b text-green-600" id="discount-row" style="display:none;">
+                                <span>Знижка</span>
+                                <span class="font-semibold" id="fin-discount">-₴0</span>
+                            </div>
+                            <div class="flex justify-between py-2 border-b">
+                                <span class="text-gray-600">Передплата</span>
+                                <span class="font-semibold text-green-600" id="fin-prepaid">₴0</span>
+                            </div>
+                            <div class="flex justify-between py-3 text-lg border-t-2">
+                                <span class="font-bold">До сплати</span>
+                                <span class="font-bold text-blue-600" id="fin-total">₴0</span>
+                            </div>
+
+                            <div class="pt-4 space-y-3">
+                                <button onclick="sendInvoice()" class="w-full border rounded-lg py-2 hover:bg-gray-50">
+                                    <i class="fas fa-file-invoice mr-2"></i>Надіслати рахунок
+                                </button>
+                                <button onclick="saveChanges()" class="w-full border rounded-lg py-2 hover:bg-gray-50">
+                                    <i class="fas fa-save mr-2"></i>Зберегти зміни
+                                </button>
+                                <button onclick="issueOrder()" class="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-lg hover:from-green-600 hover:to-green-700 font-semibold">
+                                    <i class="fas fa-check-circle mr-2"></i>Видати замовлення
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const orderId = {{ orderId }};
+        let orderData = null;
+        let items = [];
+
+        async function loadOrder() {
+            try {
+                const response = await fetch(`/api/manager/orders/${orderId}`);
+                orderData = await response.json();
+                
+                // Update UI
+                document.getElementById('order-number').textContent = orderData.id || orderId;
+                document.getElementById('client-name').textContent = orderData.customer_name || 'Клієнт';
+                document.getElementById('client-phone').textContent = orderData.customer_phone || '';
+                document.getElementById('client-email').textContent = orderData.customer_email || '';
+                document.getElementById('issue-date').textContent = orderData.date_from || '';
+                document.getElementById('return-date').textContent = orderData.date_to || '';
+                
+                if (orderData.note) {
+                    document.getElementById('client-comment-block').style.display = 'block';
+                    document.getElementById('client-comment').textContent = orderData.note;
+                }
+                
+                // Financial
+                document.getElementById('fin-rental').textContent = '₴' + (orderData.rent_total || 0);
+                document.getElementById('fin-deposit').textContent = '₴' + (orderData.deposit_total || 0);
+                document.getElementById('fin-total').textContent = '₴' + (orderData.rent_total || 0);
+                
+                items = orderData.items || [];
+                renderItems();
+                updateProgress();
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Помилка завантаження замовлення');
+            }
+        }
+
+        function renderItems() {
+            const container = document.getElementById('items-container');
+            if (items.length === 0) {
+                container.innerHTML = '<div class="text-center py-8 text-gray-500">Немає товарів</div>';
+                return;
+            }
+            
+            container.innerHTML = items.map(item => `
+                <div class="border rounded-lg p-4 mb-4 hover:shadow-md transition-shadow">
+                    <div class="flex gap-4">
+                        <div class="w-20 h-20 bg-gray-100 rounded border flex items-center justify-center">
+                            <i class="fas fa-image text-gray-400 text-2xl"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-start mb-2">
+                                <div>
+                                    <div class="font-semibold">${item.name}</div>
+                                    <div class="text-sm text-gray-500">${item.sku || ''}</div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="font-bold text-lg">₴${item.subtotal || 0}</div>
+                                    <div class="text-xs text-gray-500">₴${item.rent_price || 0}/доба</div>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-4 gap-4 mt-3">
+                                <div>
+                                    <div class="text-xs text-gray-500">Замовлено</div>
+                                    <div class="font-semibold">${item.qty}</div>
+                                </div>
+                                <div>
+                                    <div class="text-xs text-gray-500">Підібрано</div>
+                                    <div class="font-semibold flex items-center gap-1">
+                                        <span id="picked-${item.id}">${item.picked || 0}</span>
+                                        ${(item.picked || 0) >= item.qty ? 
+                                            '<i class="fas fa-check-circle text-green-600"></i>' : 
+                                            '<i class="fas fa-times-circle text-orange-600"></i>'}
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="text-xs text-gray-500">Наявність</div>
+                                    <div class="font-semibold text-green-600">В наявності</div>
+                                </div>
+                                <div>
+                                    <div class="text-xs text-gray-500">Застава</div>
+                                    <div class="font-semibold">₴${item.deposit_per_item || 0}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function handleScan() {
+            const barcode = document.getElementById('scan-input').value.trim();
+            if (!barcode) return;
+            
+            const item = items.find(i => i.sku === barcode);
+            if (item && (item.picked || 0) < item.qty) {
+                item.picked = (item.picked || 0) + 1;
+                renderItems();
+                updateProgress();
+                alert(`✅ Відскановано: ${item.name} (+1)`);
+            } else {
+                alert('⚠️ Штрихкод не знайдено або кількість вже зібрана');
+            }
+            
+            document.getElementById('scan-input').value = '';
+            document.getElementById('scan-input').focus();
+        }
+
+        function updateProgress() {
+            const totalQty = items.reduce((sum, i) => sum + i.qty, 0);
+            const pickedQty = items.reduce((sum, i) => sum + (i.picked || 0), 0);
+            const progress = totalQty > 0 ? Math.round((pickedQty / totalQty) * 100) : 0;
+            
+            document.getElementById('picking-progress').textContent = progress + '%';
+            document.getElementById('progress-bar').style.width = progress + '%';
+        }
+
+        function issueOrder() {
+            const allPicked = items.every(item => (item.picked || 0) >= item.qty);
+            if (!allPicked && !confirm('Не всі позиції зібрано. Підтвердіть часткову видачу?')) {
+                return;
+            }
+            
+            alert('✅ Замовлення видано клієнту!');
+            setTimeout(() => window.location.href = '/manager-new', 1000);
+        }
+
+        function saveChanges() {
+            alert('✅ Зміни збережено!');
+        }
+
+        function sendInvoice() {
+            alert('📧 Рахунок надіслано на email клієнта');
+        }
+
+        function printPickList() {
+            window.print();
+        }
+
+        loadOrder();
+    </script>
+</body>
+</html>

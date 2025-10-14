@@ -1,0 +1,52 @@
+<!-- Mini Cart for Header -->
+<div class="mini-cart">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+        <i class="fa fa-shopping-cart"></i> 
+        <span id="cart-count" data-testid="cart-count">{{ cartCount|default(0) }}</span> товарів
+        {% if cartTotal > 0 %}
+            <span class="cart-total">({{ '₴ ' ~ cartTotal|number_format }})</span>
+        {% endif %}
+    </a>
+    
+    <ul class="dropdown-menu dropdown-menu-right cart-dropdown">
+        {% if cart|length > 0 %}
+            {% for item in cart %}
+                <li class="cart-item" data-testid="cart-item-{{ item.product_id }}">
+                    <div class="media">
+                        {% if item.image %}
+                            <div class="media-left">
+                                <img src="{{ item.image }}" alt="{{ item.name }}" class="media-object" width="50">
+                            </div>
+                        {% endif %}
+                        <div class="media-body">
+                            <h6 class="media-heading">{{ item.name|slice(0, 30) }}</h6>
+                            <small>
+                                {{ item.quantity }} x {{ item.rental_days }} днів = 
+                                ₴ {{ (item.price * item.quantity * item.rental_days)|number_format }}
+                            </small>
+                            <div>
+                                <button class="btn btn-xs btn-danger btn-remove-from-cart" 
+                                        data-product-id="{{ item.product_id }}"
+                                        data-testid="remove-from-cart-{{ item.product_id }}">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            {% endfor %}
+            <li class="divider"></li>
+            <li class="text-center">
+                <strong>Загалом: ₴ {{ cartTotal|number_format }}</strong>
+            </li>
+            <li class="text-center">
+                <a href="{{ 'cart'|app }}" class="btn btn-sm btn-primary">Переглянути кошик</a>
+                <a href="{{ 'checkout'|app }}" class="btn btn-sm btn-success">Оформити</a>
+            </li>
+        {% else %}
+            <li id="cart-empty" class="text-center" data-testid="cart-empty">
+                <p>Ваш кошик порожній</p>
+            </li>
+        {% endif %}
+    </ul>
+</div>

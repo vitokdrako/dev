@@ -1,0 +1,90 @@
+##
+description = "Manager dashboard layout"
+==
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <title>{{ this.page.title }} - FarforRent</title>
+    <meta charset="utf-8">
+    <meta name="description" content="{{ this.page.meta_description }}">
+    <meta name="title" content="{{ this.page.meta_title }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- FullCalendar CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
+    <!-- Manager CSS -->
+    <link href="{{ 'assets/css/manager.css'|theme }}" rel="stylesheet">
+    {% styles %}
+</head>
+<body class="manager-body">
+
+    <!-- Manager Header -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary manager-navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-clipboard-list"></i>
+                FarforRent - Кабінет менеджера
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#managerNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="managerNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/manager">
+                            <i class="fas fa-home"></i> Головна
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/backend/farforrent/catalog/manager/createorder">
+                            <i class="fas fa-plus"></i> Нове замовлення
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/backend/farforrent/catalog/manager">
+                            <i class="fas fa-tasks"></i> Обробка замовлень
+                        </a>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/backend">
+                            <i class="fas fa-cog"></i> Адмін панель
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">
+                            <i class="fas fa-globe"></i> Сайт
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Content -->
+    <div class="manager-content">
+        <div class="container-fluid">
+            {% page %}
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- FullCalendar JS -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/uk.min.js"></script>
+    <script src="{{ 'assets/js/manager.js'|theme }}"></script>
+    {% framework extras %}
+    {% scripts %}
+
+</body>
+</html>

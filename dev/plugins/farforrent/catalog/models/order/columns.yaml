@@ -1,0 +1,78 @@
+# ===================================
+#  List Column Definitions
+# ===================================
+
+columns:
+    id:
+        label: №
+        type: number
+        searchable: true
+        sortable: true
+        width: 80px
+
+    kind:
+        label: Тип
+        type: partial
+        path: $/farforrent/catalog/models/order/_kind_badge.htm
+        searchable: false
+        sortable: true
+        width: 120px
+
+    status:
+        label: Статус
+        type: partial
+        path: $/farforrent/catalog/models/order/_status_badge.htm
+        searchable: false
+        sortable: true
+        width: 120px
+
+    customer_name:
+        label: Клієнт
+        type: text
+        searchable: true
+        sortable: true
+
+    customer_phone:
+        label: Телефон
+        type: text
+        searchable: true
+        sortable: false
+
+    date_from:
+        label: Дата від
+        type: date
+        searchable: false
+        sortable: true
+        width: 120px
+
+    date_to:
+        label: Дата до
+        type: date
+        searchable: false
+        sortable: true
+        width: 120px
+
+    rent_total:
+        label: Сума
+        type: partial
+        path: $/farforrent/catalog/models/order/_price.htm
+        searchable: false
+        sortable: true
+        width: 120px
+        align: right
+
+    deposit_total:
+        label: Депозит
+        type: partial
+        path: $/farforrent/catalog/models/order/_price.htm
+        searchable: false
+        sortable: true
+        width: 120px
+        align: right
+
+    created_at:
+        label: Створено
+        type: datetime
+        searchable: false
+        sortable: true
+        width: 160px

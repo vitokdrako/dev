@@ -1,0 +1,10 @@
+fields:
+  image:
+    label: Фото
+    type: fileupload
+    mode: image
+    fileTypes: jpg,jpeg,png,webp
+    useCaption: false
+    thumbOptions:
+      mode: crop
+      auto: true

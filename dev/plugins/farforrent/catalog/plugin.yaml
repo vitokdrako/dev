@@ -1,0 +1,6 @@
+plugin:
+    name: 'farforrent.catalog::lang.plugin.name'
+    description: 'farforrent.catalog::lang.plugin.description'
+    author: Farforrent
+    icon: oc-icon-adjust
+    homepage: ''

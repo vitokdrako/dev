@@ -1,0 +1,69 @@
+<div class="form-group">
+    <div class="timeline">
+        <div class="timeline-item">
+            <div class="timeline-badge bg-primary">
+                <i class="icon-plus"></i>
+            </div>
+            <div class="timeline-panel">
+                <div class="timeline-heading">
+                    <h4 class="timeline-title">Замовлення створено</h4>
+                    <p><small class="text-muted">
+                        <i class="icon-time"></i> <?= $model->created_at ? $model->created_at->format('d.m.Y H:i') : '-' ?>
+                    </small></p>
+                </div>
+            </div>
+        </div>
+
+        <?php if ($model->updated_at && $model->updated_at != $model->created_at): ?>
+        <div class="timeline-item">
+            <div class="timeline-badge bg-info">
+                <i class="icon-edit"></i>
+            </div>
+            <div class="timeline-panel">
+                <div class="timeline-heading">
+                    <h4 class="timeline-title">Останнє оновлення</h4>
+                    <p><small class="text-muted">
+                        <i class="icon-time"></i> <?= $model->updated_at->format('d.m.Y H:i') ?>
+                    </small></p>
+                </div>
+            </div>
+        </div>
+        <?php endif; ?>
+    </div>
+
+    <style>
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+        .timeline-item {
+            position: relative;
+            padding-left: 50px;
+            margin-bottom: 20px;
+        }
+        .timeline-badge {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        .timeline-badge.bg-primary { background-color: #3498db; }
+        .timeline-badge.bg-info { background-color: #1abc9c; }
+        .timeline-badge.bg-success { background-color: #2ecc71; }
+        .timeline-panel {
+            border-left: 2px solid #e0e0e0;
+            padding-left: 20px;
+        }
+        .timeline-title {
+            margin: 0 0 5px 0;
+            font-size: 14px;
+            font-weight: 600;
+        }
+    </style>
+</div>

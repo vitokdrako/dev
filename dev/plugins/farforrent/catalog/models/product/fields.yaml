@@ -1,0 +1,148 @@
+fields:
+    category:
+        label: Категорія
+        type: relation
+        nameFrom: name_ua
+        emptyOption: 'Обрати категорію'
+        span: left
+    subcategory_id:
+        label: Підкатегорія
+        type: dropdown
+        span: right
+        emptyOption: 'Обрати підкатегорію'
+        dependsOn:
+            - category
+    group:
+        label: 'Група (картка)'
+        nameFrom: name_ua
+        descriptionFrom: description
+        emptyOption: 'Обрати групу'
+        span: full
+        required: 0
+        type: relation
+    sku:
+        label: 'Артикул (SKU)'
+        span: left
+        searchable: true
+        type: text
+        required: true
+    regenerate_sku:
+        label: 'Перегенерувати SKU'
+        type: switch
+        default: false
+        comment: 'Якщо увімкнено — згенерується новий SKU під час збереження.'
+        span: right
+        context: update
+    price:
+        label: Ціна
+        type: number
+        min: 0
+        required: true
+        span: left
+    quantity:
+        label: Кількість
+        type: number
+        default: 1
+        min: 0
+        span: right
+    rent_price:
+        label: 'Оренда/доба (auto)'
+        type: number
+        readOnly: true
+        span: left
+    deposit:
+        label: 'Депозит (auto)'
+        type: number
+        readOnly: true
+        span: right
+    status:
+        label: Статус
+        type: dropdown
+        options:
+            available: Доступний
+            rented: Виданий
+            damaged: Пошкоджений
+            in_progress: 'В роботі'
+            for_sale: 'На продаж'
+        default: available
+        span: left
+    barcode:
+        label: 'Штрих-код (auto)'
+        type: text
+        readOnly: true
+        span: right
+    image:
+        label: Фото
+        type: fileupload
+        mode: image
+        fileTypes: 'jpg,jpeg,png,webp'
+        useCaption: false
+        thumbOptions: null
+        auto: true
+    size:
+        label: 'Розмір (текст)'
+        type: text
+        span: right
+    height:
+        label: Висота
+        type: number
+        span: left
+    width:
+        label: Ширина
+        type: number
+        span: left
+    diameter:
+        label: Діаметр
+        type: number
+        span: left
+    length:
+        label: Довжина
+        type: number
+        span: left
+    color:
+        label: 'Колір (перекрити груповий)'
+        type: text
+        span: left
+    material:
+        label: 'Матеріал (перекрити груповий)'
+        type: text
+        span: right
+    related_skus:
+        label: 'Пов’язані за артикулом'
+        type: taglist
+        mode: text
+        separator: comma
+        customTags: true
+        useKey: false
+        span: full
+        placeholder: 'Введіть SKU і натисніть Enter'
+        comment: 'Додайте один або кілька SKU (через Enter/кому)'
+    comment:
+        label: Коментар
+        type: text
+        span: full
+    name_ua:
+        label: Nazva
+        span: auto
+        type: text
+    rarity:
+        label: Цінність
+        span: auto
+        type: text
+tabs:
+    fields:
+        company_sku:
+            label: 'Артикул виробника'
+            type: text
+            span: left
+            tab: 'Для менеджерів'
+        company_name:
+            label: 'Компанія виробника'
+            type: text
+            span: right
+            tab: 'Для менеджерів'
+        manager_comment:
+            label: 'Коментар менеджера'
+            type: text
+            span: full
+            tab: 'Для менеджерів'

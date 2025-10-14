@@ -1,0 +1,31 @@
+title = "Кабінет менеджера"
+url = "/manager"
+layout = "manager"
+is_hidden = 0
+meta_title = "FarforRent - Кабінет менеджера"
+meta_description = "Кабінет менеджера для обробки замовлень оренди"
+
+[homeApp]
+==
+<?php
+    function onStart()
+    {
+        // Для тестування поки без авторизації
+        // В продакшені розкоментувати:
+        /*
+        $user = BackendAuth::getUser();
+        if (!$user) {
+            return Redirect::to(Backend::url('backend/auth/signin'));
+        }
+        
+        if (!$user->hasPermission(['farforrent.catalog.manage_orders'])) {
+            Flash::error('Недостатньо прав доступу');
+            return Redirect::to('/');
+        }
+        */
+    }
+?>
+
+<div id="manager-app">
+    {% component 'homeApp' %}
+</div>

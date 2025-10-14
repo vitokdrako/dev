@@ -1,0 +1,48 @@
+<div class="card-box" id="create-group-box">
+  <div class="card-head" style="display:flex;justify-content:space-between;align-items:center;">
+    <div class="card-title"><strong>Нова група</strong></div>
+  </div>
+
+  <?= Form::open([
+      'data-request' => 'onCreateGroup',
+      'data-request-flash' => 1,
+      'data-request-success' => "$('#cards-list').prepend(data.card); $('#create-group').html(data.form);"
+  ]) ?>
+
+    <div class="layout-row">
+      <!-- форма групи (FormWidget) -->
+      <?= $groupForm->render() ?>
+    </div>
+
+    <div class="layout-row">
+      <h4 style="margin:10px 0;">Розміри/Варіанти</h4>
+      <table class="table variants-table">
+        <thead>
+          <tr>
+            <th>Зображення</th>
+            <th>Розмір</th>
+            <th>SKU</th>
+            <th>Ціна</th>
+            <th>Оренда (auto)</th>
+            <th>Депозит (auto)</th>
+            <th>H</th><th>W</th><th>D</th><th>L</th>
+            <th>Статус</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="new-rows"></tbody>
+      </table>
+
+      <div class="card-actions" style="display:flex;gap:8px;align-items:center;">
+        <a class="btn btn-default" data-add-new-row>
+          <i class="icon-plus"></i> Додати розмір
+        </a>
+        <span style="flex:1 1 auto;"></span>
+        <button class="btn btn-primary">
+          <i class="icon-check"></i> Створити групу + варіанти
+        </button>
+      </div>
+    </div>
+
+  <?= Form::close() ?>
+</div>

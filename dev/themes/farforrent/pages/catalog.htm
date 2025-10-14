@@ -1,0 +1,110 @@
+title = "Каталог товарів"
+url = "/catalog"
+layout = "default"
+meta_title = "Каталог товарів для оренди - FarforRent"
+meta_description = "Повний каталог товарів для оренди: посуд, декор, меблі, освітлення та багато іншого для ваших подій"
+
+[productList]
+productsPerPage = 12
+
+[categoryList]
+showTree = 1
+
+[cart]
+==
+<div class="container">
+    <div class="row">
+        <!-- Breadcrumbs -->
+        <div class="col-md-12">
+            <ol class="breadcrumb">
+                <li><a href="{{ '/'|app }}">Головна</a></li>
+                <li class="active">Каталог товарів</li>
+            </ol>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Sidebar with Categories -->
+        <div class="col-md-3">
+            {% component 'categoryList' %}
+            
+            <!-- Additional Filters can be added here -->
+            <div class="filters-section">
+                <h4>Фільтри</h4>
+                <div class="filter-item">
+                    <label class="control-label">Ціна за день:</label>
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <input type="number" class="form-control input-sm" placeholder="від ₴" id="price-from">
+                        </div>
+                        <div class="col-xs-6">
+                            <input type="number" class="form-control input-sm" placeholder="до ₴" id="price-to">
+                        </div>
+                    </div>
+                </div>
+                <div class="filter-item">
+                    <button class="btn btn-primary btn-sm btn-block" onclick="applyFilters()">Застосувати</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Products Grid -->
+        <div class="col-md-9">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="page-header">
+                        <h1>Всі товари для оренди</h1>
+                        <p>Оберіть потрібні товари для вашої події. Всі ціни вказані за день оренди.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sorting -->
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="sorting-panel">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <p class="results-count">Показано товарів: <strong>{{ products.total ?? 0 }}</strong></p>
+                            </div>
+                            <div class="col-sm-6 text-right">
+                                <div class="form-inline">
+                                    <label>Сортувати за:</label>
+                                    <select class="form-control input-sm" onchange="sortProducts(this.value)">
+                                        <option value="name_asc">Назвою (А-Я)</option>
+                                        <option value="name_desc">Назвою (Я-А)</option>
+                                        <option value="price_asc">Ціною (дешевше)</option>
+                                        <option value="price_desc">Ціною (дорожче)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row product-grid">
+                {% component 'productList' %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function applyFilters() {
+    var priceFrom = document.getElementById('price-from').value;
+    var priceTo = document.getElementById('price-to').value;
+    
+    var url = new URL(window.location);
+    if (priceFrom) url.searchParams.set('price_from', priceFrom);
+    if (priceTo) url.searchParams.set('price_to', priceTo);
+    
+    window.location.href = url.toString();
+}
+
+function sortProducts(sort) {
+    var url = new URL(window.location);
+    url.searchParams.set('sort', sort);
+    window.location.href = url.toString();
+}
+</script>

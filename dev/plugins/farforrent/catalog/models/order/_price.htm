@@ -1,0 +1,6 @@
+<?php
+// Отримуємо значення з колонки
+$value = $record->{$column->columnName} ?? 0;
+$formatted = number_format($value, 2, ',', ' ');
+?>
+<span style="font-weight: 500;">₴<?= $formatted ?></span>

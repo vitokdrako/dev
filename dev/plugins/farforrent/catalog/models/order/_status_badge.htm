@@ -1,0 +1,13 @@
+<?php
+$badges = [
+    'draft' => ['label' => 'Чернетка', 'class' => 'badge-default'],
+    'confirmed' => ['label' => 'Підтверджено', 'class' => 'badge-primary'],
+    'ready' => ['label' => 'Готово', 'class' => 'badge-success'],
+    'issued' => ['label' => 'Видано', 'class' => 'badge-info'],
+    'returned' => ['label' => 'Повернуто', 'class' => 'badge-warning'],
+    'cancelled' => ['label' => 'Скасовано', 'class' => 'badge-danger'],
+    'completed' => ['label' => 'Завершено', 'class' => 'badge-secondary']
+];
+$badge = $badges[$record->status] ?? ['label' => $record->status, 'class' => 'badge-default'];
+?>
+<span class="badge <?= $badge['class'] ?>"><?= $badge['label'] ?></span>

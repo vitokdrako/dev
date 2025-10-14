@@ -1,0 +1,245 @@
+{% if managerMode %}
+    <!-- Manager Dashboard -->
+    <div class="manager-dashboard-container">
+        
+        <!-- Statistics Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.newOrders }}</div>
+                <div class="stat-label">Нові замовлення</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.readyForIssue }}</div>
+                <div class="stat-label">Готові до видачі</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.returnsDue }}</div>
+                <div class="stat-label">Час повернення</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">₴{{ stats.totalRevenue|number_format }}</div>
+                <div class="stat-label">Дохід сьогодні</div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <h3><i class="fas fa-bolt"></i> Швидкі дії</h3>
+            <div class="quick-action-grid">
+                <a href="/backend/farforrent/catalog/manager/createorder" class="btn-manager btn-manager-success">
+                    <i class="fas fa-plus"></i> Створити замовлення
+                </a>
+                <a href="/backend/farforrent/catalog/products" class="btn-manager">
+                    <i class="fas fa-boxes"></i> Управління товарами
+                </a>
+                <a href="/backend/farforrent/catalog/categories" class="btn-manager">
+                    <i class="fas fa-folder-open"></i> Категорії
+                </a>
+                <a href="/backend" class="btn-manager btn-manager-warning">
+                    <i class="fas fa-cog"></i> Адмін панель
+                </a>
+            </div>
+        </div>
+
+        <!-- Recent Orders -->
+        <div class="manager-dashboard">
+            <div class="manager-card">
+                <div class="manager-card-header">
+                    <h3><i class="fas fa-clipboard-list"></i> Останні замовлення</h3>
+                    <div class="card-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                </div>
+                
+                <div class="order-list">
+                    {% for order in recentOrders %}
+                    <div class="order-item">
+                        <div class="order-item-header">
+                            <div class="order-number">{{ order.order_number }}</div>
+                            <div class="order-status status-{{ order.status }}">
+                                {% if order.status == 'new' %}Новий{% endif %}
+                                {% if order.status == 'ready' %}Готовий{% endif %}
+                                {% if order.status == 'issued' %}Виданий{% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="order-details">
+                            <div class="order-customer">{{ order.customer }}</div>
+                            <div>{{ order.phone }}</div>
+                            <div><strong>₴{{ order.total|number_format }}</strong> ({{ order.items_count }} поз.)</div>
+                        </div>
+                        
+                        <div class="order-dates">
+                            <div class="order-date">
+                                <i class="fas fa-calendar-plus"></i> {{ order.rental_start }}
+                            </div>
+                            <div class="order-date">
+                                <i class="fas fa-calendar-minus"></i> {{ order.rental_end }}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="manager-actions">
+                    <a href="/backend/farforrent/catalog/manager" class="btn-manager">
+                        Всі замовлення
+                    </a>
+                </div>
+            </div>
+
+            <div class="manager-card">
+                <div class="manager-card-header">
+                    <h3><i class="fas fa-tasks"></i> Завдання на сьогодні</h3>
+                    <div class="card-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                </div>
+                
+                <div class="task-list">
+                    <div class="task-item">
+                        <i class="fas fa-paper-plane text-success"></i>
+                        <div class="task-content">
+                            <div class="task-title">Видача замовлення FR-2025-002</div>
+                            <div class="task-subtitle">Марія Іваненко - 16:00</div>
+                        </div>
+                    </div>
+                    
+                    <div class="task-item">
+                        <i class="fas fa-undo text-warning"></i>
+                        <div class="task-content">
+                            <div class="task-title">Повернення FR-2025-001</div>
+                            <div class="task-subtitle">Іван Петренко - 18:00</div>
+                        </div>
+                    </div>
+                    
+                    <div class="task-item">
+                        <i class="fas fa-phone text-info"></i>
+                        <div class="task-content">
+                            <div class="task-title">Дзвінок клієнту</div>
+                            <div class="task-subtitle">Підтвердження замовлення FR-2025-003</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="manager-actions">
+                    <a href="#" class="btn-manager btn-manager-success">
+                        <i class="fas fa-plus"></i> Додати завдання
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Manager Tools -->
+        <div class="manager-card">
+            <div class="manager-card-header">
+                <h3><i class="fas fa-tools"></i> Інструменти менеджера</h3>
+            </div>
+            
+            <div class="tools-grid">
+                <a href="/api/manager/orders/today" class="tool-item" target="_blank">
+                    <i class="fas fa-calendar-day"></i>
+                    <span>Замовлення сьогодні (API)</span>
+                </a>
+                
+                <a href="/backend/farforrent/catalog/manager/issueorder" class="tool-item">
+                    <i class="fas fa-shipping-fast"></i>
+                    <span>Швидка видача</span>
+                </a>
+                
+                <a href="/backend/farforrent/catalog/manager/processreturn" class="tool-item">
+                    <i class="fas fa-undo"></i>
+                    <span>Обробка повернень</span>
+                </a>
+                
+                <a href="#" class="tool-item" onclick="printDailyReport()">
+                    <i class="fas fa-print"></i>
+                    <span>Звіт за день</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <style>
+    .task-list {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+    
+    .task-item {
+        display: flex;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid #f1f3f4;
+        gap: 15px;
+    }
+    
+    .task-item:last-child {
+        border-bottom: none;
+    }
+    
+    .task-content {
+        flex: 1;
+    }
+    
+    .task-title {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 4px;
+    }
+    
+    .task-subtitle {
+        font-size: 0.85rem;
+        color: #6c757d;
+    }
+    
+    .tools-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+    }
+    
+    .tool-item {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        text-decoration: none;
+        color: #495057;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.2s ease;
+        border: 1px solid #e9ecef;
+    }
+    
+    .tool-item:hover {
+        background: #e9ecef;
+        transform: translateY(-2px);
+        color: #2c3e50;
+        text-decoration: none;
+    }
+    
+    .text-success { color: #28a745; }
+    .text-warning { color: #ffc107; }
+    .text-info { color: #17a2b8; }
+    </style>
+
+    <script>
+    function printDailyReport() {
+        // Функція для друку звіту за день
+        alert('Функція друку звіту буде реалізована');
+    }
+    
+    // Оновлення даних кожні 30 секунд
+    setInterval(function() {
+        // Тут можна додати AJAX запити для оновлення статистики
+        console.log('Оновлення даних...');
+    }, 30000);
+    </script>
+
+{% else %}
+    <!-- Standard Home Page (if not manager mode) -->
+    <div class="home-content">
+        <p>Стандартна головна сторінка</p>
+    </div>
+{% endif %}

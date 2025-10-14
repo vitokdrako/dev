@@ -1,0 +1,80 @@
+fields:
+    name_ua:
+        label: 'Назва (UA)'
+        span: left
+        required: true
+        type: text
+    name_en:
+        label: 'Назва (EN)'
+        span: right
+        type: text
+
+    category:
+        label: Категорія
+        type: relation
+        nameFrom: name_ua
+        span: left
+        emptyOption: 'Обрати категорію'
+    subcategory:
+        label: Підкатегорія
+        type: relation
+        nameFrom: name_ua
+        span: right
+        emptyOption: 'Обрати підкатегорію'
+
+    material:
+        label: Матеріал
+        type: text
+        span: left
+    color:
+        label: Колір
+        type: text
+        span: right
+
+    image:
+        label: Фото
+        type: fileupload
+        mode: image       # обов'язково (image або file)
+        maxFiles: 1
+        span: auto
+        fileTypes: jpg,jpeg,png,webp
+        thumbOptions:
+            mode: crop
+            extension: auto
+    rarity:
+        label: Цінність
+        type: dropdown
+        options:
+            regular: Звичайний
+            rare: Рідкісний
+            vintage: Вінтаж
+        span: right
+        
+    children_skus:
+        label: Додати товари до групи (SKU через кому)
+        type: text
+        span: full
+        comment: "Введіть артикули товарів через кому, напр. PU157, TEC1, TEC2 і натисніть ENTER"
+    rent_percent:
+        label: 'Ставка оренди (%)'
+        type: dropdown
+        options:
+          5: 5%
+          10: 10%
+          15: 15%
+          20: 20%
+          25: 25%
+          30: 30%
+        default: 20
+        span: auto
+
+
+tabs:
+  fields:
+    variants:
+      label: 'Варіанти'
+      type: relation
+      tab: 'Варіанти'
+      nameFrom: sku
+      span: full
+      emptyOption: 'У цій групі ще немає товарів'

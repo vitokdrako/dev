@@ -1,0 +1,9 @@
+<?php
+$badges = [
+    'pending' => ['label' => 'Очікує', 'class' => 'badge-warning'],
+    'approved' => ['label' => 'Підтверджено', 'class' => 'badge-success'],
+    'waived' => ['label' => 'Відхилено', 'class' => 'badge-secondary']
+];
+$badge = $badges[$record->status] ?? ['label' => $record->status, 'class' => 'badge-default'];
+?>
+<span class="badge <?= $badge['class'] ?>"><?= $badge['label'] ?></span>

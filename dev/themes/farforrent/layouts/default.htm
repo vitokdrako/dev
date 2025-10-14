@@ -1,0 +1,48 @@
+##
+description = "Default layout"
+==
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <title>{{ this.page.title }} - FarforRent - Оренда декору</title>
+    <meta charset="utf-8">
+    <meta name="description" content="{{ this.page.meta_description }}">
+    <meta name="title" content="{{ this.page.meta_title }}">
+    <meta name="author" content="FarforRent">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="October CMS">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="{{ 'assets/css/farforrent.css'|theme }}" rel="stylesheet">
+    {% styles %}
+</head>
+<body>
+
+    <!-- Header -->
+    <header id="header">
+        {% partial "site/header" %}
+    </header>
+
+    <!-- Content -->
+    <div id="content">
+        {% page %}
+    </div>
+
+    <!-- Footer -->
+    <footer id="footer">
+        {% partial "site/footer" %}
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"></script>
+    <script src="{{ 'assets/js/farforrent.js'|theme }}"></script>
+    {% framework extras %}
+    {% scripts %}
+
+</body>
+</html>

@@ -1,0 +1,38 @@
+columns:
+    id:
+        label: ID
+        type: number
+        width: 60px
+
+    order_id:
+        label: Замовлення
+        type: text
+        searchable: true
+
+    type:
+        label: Тип
+        type: partial
+        path: $/farforrent/catalog/models/damage/_type_badge.htm
+        sortable: true
+
+    description:
+        label: Опис
+        type: text
+        searchable: true
+
+    amount:
+        label: Сума відшкодування
+        type: partial
+        path: $/farforrent/catalog/models/order/_price.htm
+        sortable: true
+
+    status:
+        label: Статус
+        type: partial
+        path: $/farforrent/catalog/models/damage/_status_badge.htm
+        sortable: true
+
+    happened_at:
+        label: Дата
+        type: datetime
+        sortable: true

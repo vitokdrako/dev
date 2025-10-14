@@ -1,0 +1,57 @@
+fields:
+    order_id:
+        label: Замовлення №
+        type: number
+        required: true
+        span: left
+
+    type:
+        label: Тип пошкодження
+        type: dropdown
+        options:
+            dirty: Забруднення
+            repairable: Потребує ремонту
+            broken_irrecoverable: Зламано (не підлягає відновленню)
+            lost: Втрачено
+        required: true
+        span: right
+
+    description:
+        label: Опис
+        type: textarea
+        size: large
+        required: true
+
+    amount:
+        label: Сума відшкодування (₴)
+        type: number
+        required: true
+        step: 0.01
+        span: left
+
+    status:
+        label: Статус
+        type: dropdown
+        options:
+            pending: Очікує
+            approved: Підтверджено
+            waived: Відхилено
+        required: true
+        span: right
+
+    happened_at:
+        label: Дата виявлення
+        type: datepicker
+        mode: datetime
+        required: true
+
+    photos:
+        label: Фото
+        type: textarea
+        comment: JSON масив з URL фото
+        size: small
+
+    notes:
+        label: Примітки
+        type: textarea
+        size: small

@@ -1,0 +1,11 @@
+name: Subcategories
+modelClass: Farforrent\Catalog\Models\Subcategory
+form: $/farforrent/catalog/models/subcategory/fields.yaml
+defaultRedirect: farforrent/catalog/subcategories
+create:
+    redirect: 'farforrent/catalog/subcategories/update/:id'
+    redirectClose: farforrent/catalog/subcategories
+update:
+    redirect: farforrent/catalog/subcategories
+    redirectClose: farforrent/catalog/subcategories
+preview: {  }

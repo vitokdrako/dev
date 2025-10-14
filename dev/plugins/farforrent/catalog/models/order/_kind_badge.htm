@@ -1,0 +1,10 @@
+<?php
+$badges = [
+    'new' => ['label' => 'Нове', 'class' => 'badge-primary'],
+    'issue' => ['label' => 'Видача', 'class' => 'badge-success'],
+    'return' => ['label' => 'Повернення', 'class' => 'badge-info'],
+    'completed' => ['label' => 'Завершено', 'class' => 'badge-secondary']
+];
+$badge = $badges[$record->kind] ?? ['label' => $record->kind, 'class' => 'badge-default'];
+?>
+<span class="badge <?= $badge['class'] ?>"><?= $badge['label'] ?></span>

@@ -1,0 +1,15 @@
+<?php Block::put('breadcrumb') ?>
+    <ul>
+        <li><a href="<?= Backend::url('farforrent/catalog/productgroups') ?>">Product Groups</a></li>
+        <li><?= e($this->pageTitle) ?></li>
+    </ul>
+<?php Block::endPut() ?>
+
+<div class="layout">
+    <?= $this->formRenderPreview() ?>
+    <div class="form-buttons">
+        <a href="<?= Backend::url('farforrent/catalog/productgroups') ?>" class="btn btn-default">
+            <?= e(trans('backend::lang.form.return_to_list')) ?>
+        </a>
+    </div>
+</div>

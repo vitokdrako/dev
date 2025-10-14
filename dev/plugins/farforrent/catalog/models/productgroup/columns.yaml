@@ -1,0 +1,30 @@
+columns:
+    id:
+        label: ID
+        searchable: false
+        sortable: true
+    image:
+        label: Зображення
+        type: partial
+        path: $/farforrent/catalog/models/productgroup/_image.htm
+        sortable: false
+        width: 90px
+    name_ua:
+        label: Назва
+        searchable: true
+        sortable: true
+    category[name_ua]:
+        label: Категорія
+        sortable: true
+        searchable: true
+    subcategory[name_ua]:
+        label: Підкатегорія
+        sortable: true
+        searchable: true
+    rarity:
+        label: Цінність
+        sortable: true
+    created_at:
+        label: Створено
+        type: datetime
+        sortable: true

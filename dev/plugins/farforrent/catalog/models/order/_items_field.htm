@@ -1,0 +1,60 @@
+<?php
+$items = $model->items ?? [];
+?>
+
+<div class="form-group">
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>№</th>
+                    <th>Товар</th>
+                    <th>SKU</th>
+                    <th>Кількість</th>
+                    <th>Ціна/добу</th>
+                    <th>Депозит</th>
+                    <th>Всього</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (count($items) > 0): ?>
+                    <?php foreach ($items as $index => $item): ?>
+                        <tr>
+                            <td><?= $index + 1 ?></td>
+                            <td><?= e($item->name ?? 'Товар') ?></td>
+                            <td><?= e($item->sku ?? '-') ?></td>
+                            <td><?= e($item->qty ?? 1) ?></td>
+                            <td>₴<?= number_format($item->rent_price ?? 0, 2) ?></td>
+                            <td>₴<?= number_format($item->deposit_per_item ?? 0, 2) ?></td>
+                            <td><strong>₴<?= number_format($item->subtotal ?? 0, 2) ?></strong></td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">
+                            <p style="padding: 20px 0;">Немає товарів у замовленні</p>
+                        </td>
+                    </tr>
+                <?php endif; ?>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="6" class="text-right"><strong>Загальна сума:</strong></td>
+                    <td><strong>₴<?= number_format($model->rent_total ?? 0, 2) ?></strong></td>
+                </tr>
+                <tr>
+                    <td colspan="6" class="text-right"><strong>Загальний депозит:</strong></td>
+                    <td><strong>₴<?= number_format($model->deposit_total ?? 0, 2) ?></strong></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    
+    <?php if ($model->exists): ?>
+        <div class="form-buttons" style="margin-top: 10px;">
+            <a href="<?= Backend::url('farforrent/catalog/orderitems/create/order/' . $model->id) ?>" class="btn btn-primary">
+                <i class="icon-plus"></i> Додати товар
+            </a>
+        </div>
+    <?php endif; ?>
+</div>

@@ -1,0 +1,14 @@
+list: $/farforrent/catalog/models/productgroup/columns.yaml
+modelClass: Farforrent\Catalog\Models\ProductGroup
+title: Product Groups
+recordUrl: farforrent/catalog/productgroups/update/:id
+noRecordsMessage: backend::lang.list.no_records
+recordsPerPage: 20
+showSetup: true
+showCheckboxes: true
+showSorting: true
+
+toolbar:
+    buttons: list_toolbar
+    search:
+        prompt: backend::lang.list.search_prompt

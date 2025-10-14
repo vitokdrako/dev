@@ -1,0 +1,10 @@
+<?php
+$badges = [
+    'dirty' => ['label' => 'Забруднення', 'class' => 'badge-info'],
+    'repairable' => ['label' => 'Ремонт', 'class' => 'badge-warning'],
+    'broken_irrecoverable' => ['label' => 'Зламано', 'class' => 'badge-danger'],
+    'lost' => ['label' => 'Втрачено', 'class' => 'badge-danger']
+];
+$badge = $badges[$record->type] ?? ['label' => $record->type, 'class' => 'badge-default'];
+?>
+<span class="badge <?= $badge['class'] ?>"><?= $badge['label'] ?></span>

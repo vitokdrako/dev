@@ -1,0 +1,544 @@
+title = "Створення замовлення"
+url = "/manager/orders/create"
+layout = ""
+is_hidden = 0
+==
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Створення замовлення - FarforRent</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --color-primary: #7c3aed;
+            --color-bg: #f9fafb;
+            --color-border: #e5e7eb;
+            --color-text-light: #6b7280;
+            --radius-sm: 0.25rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+        }
+        .card { background: white; border-radius: var(--radius-lg); border: 1px solid var(--color-border); padding: 2rem; margin-bottom: 2rem; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 2px solid var(--color-border); }
+        .card-title { font-size: 1.5rem; font-weight: 600; }
+        .order-step { margin-bottom: 2rem; }
+        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
+        .filter-group { margin-bottom: 1rem; }
+        .filter-label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--color-text-light); }
+        .filter-input, .filter-select { width: 100%; padding: 0.5rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); }
+        .btn { padding: 0.5rem 1rem; border-radius: var(--radius-md); font-weight: 500; cursor: pointer; border: none; }
+        .btn-primary { background: var(--color-primary); color: white; }
+        .btn-primary:hover { opacity: 0.9; }
+        .btn-secondary { background: var(--color-bg); color: #374151; border: 1px solid var(--color-border); }
+        .btn-sm { padding: 0.25rem 0.75rem; font-size: 0.875rem; }
+        .table { width: 100%; border-collapse: collapse; }
+        .table th, .table td { padding: 0.75rem; text-align: left; border-bottom: 1px solid var(--color-border); }
+        .table th { font-weight: 600; background: var(--color-bg); }
+    </style>
+</head>
+<body style="background: var(--color-bg); min-height: 100vh;">
+
+<div style="max-width: 1400px; margin: 0 auto; padding: 2rem;">
+    <!-- Header -->
+    <div style="background: white; border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 2rem; border: 1px solid var(--color-border);">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <a href="/manager-new" style="padding: 0.5rem; color: #6b7280; text-decoration: none;">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <h1 style="font-size: 1.5rem; font-weight: 700; flex: 1;">Створення нового замовлення</h1>
+        </div>
+    </div>
+
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">
+            <i class="fas fa-plus-circle"></i>
+            Створення нового замовлення
+        </h2>
+        <a href="/manager" class="btn btn-secondary btn-sm">
+            <i class="fas fa-arrow-left"></i>
+            Повернутися
+        </a>
+    </div>
+    
+    <form id="order-form" onsubmit="createOrder(event)">
+        <!-- Крок 1: Інформація про клієнта -->
+        <div class="order-step" id="step-customer">
+            <h3 style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid var(--color-border);">
+                <i class="fas fa-user"></i>
+                Крок 1: Інформація про клієнта
+            </h3>
+            
+            <div class="grid-2">
+                <div class="filter-group">
+                    <label class="filter-label">Пошук існуючого клієнта</label>
+                    <input type="text" class="filter-input" id="customer-search" placeholder="Введіть телефон або ім'я" oninput="searchCustomer(this.value)">
+                    <div id="customer-results" style="margin-top: 0.5rem;"></div>
+                </div>
+                
+                <div style="display: flex; align-items: center; justify-content: center; color: var(--color-text-light);">
+                    <span>або створіть нового клієнта нижче</span>
+                </div>
+            </div>
+            
+            <div class="grid-2" style="margin-top: 1.5rem;">
+                <div class="filter-group">
+                    <label class="filter-label">Ім'я *</label>
+                    <input type="text" class="filter-input" id="customer-firstname" name="customer_firstname" required>
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">Прізвище *</label>
+                    <input type="text" class="filter-input" id="customer-lastname" name="customer_lastname" required>
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">Телефон *</label>
+                    <input type="tel" class="filter-input" id="customer-phone" name="customer_phone" placeholder="+380501234567" required>
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">Email</label>
+                    <input type="email" class="filter-input" id="customer-email" name="customer_email" placeholder="client@example.com">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Крок 2: Дати оренди -->
+        <div class="order-step" style="margin-top: 2rem;">
+            <h3 style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid var(--color-border);">
+                <i class="fas fa-calendar"></i>
+                Крок 2: Період оренди
+            </h3>
+            
+            <div class="grid-2">
+                <div class="filter-group">
+                    <label class="filter-label">Дата початку *</label>
+                    <input type="date" class="filter-input" id="rental-start" name="rental_start_date" required onchange="calculateDays()">
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">Дата закінчення *</label>
+                    <input type="date" class="filter-input" id="rental-end" name="rental_end_date" required onchange="calculateDays()">
+                </div>
+            </div>
+            
+            <div id="rental-days-info" style="margin-top: 1rem; padding: 1rem; background: var(--color-bg); border-radius: var(--radius-md); display: none;">
+                <strong>Кількість днів оренди:</strong> <span id="rental-days">0</span> днів
+            </div>
+        </div>
+        
+        <!-- Крок 3: Вибір товарів -->
+        <div class="order-step" style="margin-top: 2rem;">
+            <h3 style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid var(--color-border);">
+                <i class="fas fa-box"></i>
+                Крок 3: Вибір товарів
+            </h3>
+            
+            <div class="filters" style="margin-bottom: 1.5rem;">
+                <div class="filter-group">
+                    <label class="filter-label">Пошук товару</label>
+                    <input type="text" class="filter-input" id="product-search" placeholder="Назва товару або SKU" oninput="searchProducts(this.value)">
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">Категорія</label>
+                    <select class="filter-select" id="product-category" onchange="searchProducts()">
+                        <option value="">Всі категорії</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div id="products-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+                <!-- Товари будуть тут -->
+            </div>
+            
+            <h4 style="margin: 2rem 0 1rem;">Обрані товари:</h4>
+            <div id="selected-products">
+                <div style="text-align: center; padding: 2rem; color: var(--color-text-light); background: var(--color-bg); border-radius: var(--radius-md);">
+                    <i class="fas fa-shopping-cart" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.3;"></i>
+                    <p>Товари ще не обрані</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Крок 4: Деталі замовлення -->
+        <div class="order-step" style="margin-top: 2rem;">
+            <h3 style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid var(--color-border);">
+                <i class="fas fa-info-circle"></i>
+                Крок 4: Додаткова інформація
+            </h3>
+            
+            <div class="grid-2">
+                <div class="filter-group">
+                    <label class="filter-label">Адреса доставки</label>
+                    <input type="text" class="filter-input" id="delivery-address" name="delivery_address" placeholder="вул. Хрещатик, 1, Київ">
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">Знижка (%)</label>
+                    <input type="number" class="filter-input" id="discount" name="discount_percent" min="0" max="100" value="0" onchange="calculateTotal()">
+                </div>
+            </div>
+            
+            <div class="filter-group" style="margin-top: 1rem;">
+                <label class="filter-label">Коментар клієнта</label>
+                <textarea class="filter-input" id="customer-comment" name="customer_comment" rows="3" placeholder="Додаткові побажання клієнта"></textarea>
+            </div>
+            
+            <div class="filter-group" style="margin-top: 1rem;">
+                <label class="filter-label">Коментар менеджера</label>
+                <textarea class="filter-input" id="manager-comment" name="manager_comment" rows="3" placeholder="Внутрішні нотатки"></textarea>
+            </div>
+        </div>
+        
+        <!-- Підсумок замовлення -->
+        <div style="margin-top: 2rem; padding: 1.5rem; background: var(--color-bg); border-radius: var(--radius-lg); border: 2px solid var(--color-border);">
+            <h3 style="margin-bottom: 1rem;">
+                <i class="fas fa-calculator"></i>
+                Підсумок замовлення
+            </h3>
+            
+            <div id="order-summary">
+                <div style="display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid var(--color-border);">
+                    <span>Вартість оренди:</span>
+                    <strong id="subtotal-amount">₴0</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid var(--color-border);">
+                    <span>Знижка:</span>
+                    <strong id="discount-amount">₴0</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid var(--color-border);">
+                    <span>Застава:</span>
+                    <strong id="deposit-amount">₴0</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 1rem 0; font-size: 1.25rem;">
+                    <span style="font-weight: 600;">Загальна сума:</span>
+                    <strong style="color: var(--color-primary); font-size: 1.5rem;" id="total-amount">₴0</strong>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Кнопки -->
+        <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: flex-end;">
+            <a href="/manager" class="btn btn-secondary">
+                <i class="fas fa-times"></i>
+                Скасувати
+            </a>
+            <button type="submit" class="btn btn-primary" id="submit-btn">
+                <i class="fas fa-check"></i>
+                Створити замовлення
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+let selectedProducts = [];
+let orderData = {
+    subtotal: 0,
+    discount: 0,
+    deposit: 0,
+    total: 0,
+    days: 0
+};
+
+// Пошук клієнта
+function searchCustomer(query) {
+    if (query.length < 3) {
+        document.getElementById('customer-results').innerHTML = '';
+        return;
+    }
+    
+    // TODO: Реальний пошук через API
+    document.getElementById('customer-results').innerHTML = '<small style="color: var(--color-text-light);">Шукаємо...</small>';
+}
+
+// Розрахунок днів
+function calculateDays() {
+    const start = document.getElementById('rental-start').value;
+    const end = document.getElementById('rental-end').value;
+    
+    if (start && end) {
+        const startDate = new Date(start);
+        const endDate = new Date(end);
+        const days = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
+        
+        if (days > 0) {
+            document.getElementById('rental-days').textContent = days;
+            document.getElementById('rental-days-info').style.display = 'block';
+            orderData.days = days;
+            calculateTotal();
+        } else {
+            alert('Дата закінчення має бути пізніше дати початку');
+        }
+    }
+}
+
+// Пошук товарів
+function searchProducts(query) {
+    const category = document.getElementById('product-category').value;
+    const searchQuery = query || document.getElementById('product-search').value;
+    
+    fetch(`/api/manager/products/search?q=${searchQuery}&category=${category}`)
+        .then(response => response.json())
+        .then(data => {
+            displayProducts(data);
+        })
+        .catch(error => {
+            console.error('Помилка пошуку товарів:', error);
+        });
+}
+
+// Відображення товарів
+function displayProducts(products) {
+    const container = document.getElementById('products-list');
+    
+    if (!products || products.length === 0) {
+        container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--color-text-light);">Товари не знайдені</p>';
+        return;
+    }
+    
+    container.innerHTML = products.map(product => `
+        <div class="product-card" style="padding: 1rem; background: white; border: 1px solid var(--color-border); border-radius: var(--radius-md); cursor: pointer; transition: all 0.2s;" onclick="addProduct(${product.id})">
+            <div style="aspect-ratio: 1; background: var(--color-bg); border-radius: var(--radius-sm); margin-bottom: 0.75rem; display: flex; align-items: center; justify-content: center;">
+                <i class="fas fa-image" style="font-size: 2rem; color: var(--color-text-light);"></i>
+            </div>
+            <h4 style="font-size: 0.875rem; margin-bottom: 0.5rem;">${product.name}</h4>
+            <p style="font-size: 0.75rem; color: var(--color-text-light); margin-bottom: 0.5rem;">SKU: ${product.sku || 'N/A'}</p>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 600; color: var(--color-primary);">₴${product.price_per_day}/день</span>
+                <button class="btn btn-primary btn-sm" onclick="addProduct(${product.id}); event.stopPropagation();">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Додавання товару
+function addProduct(productId) {
+    // TODO: Отримати повну інформацію про товар
+    fetch(`/api/manager/products/${productId}`)
+        .then(response => response.json())
+        .then(product => {
+            const existing = selectedProducts.find(p => p.id === productId);
+            if (existing) {
+                existing.quantity++;
+            } else {
+                selectedProducts.push({
+                    id: product.id,
+                    name: product.name,
+                    sku: product.sku,
+                    price_per_day: product.price_per_day,
+                    deposit: product.deposit || 0,
+                    quantity: 1
+                });
+            }
+            updateSelectedProducts();
+            calculateTotal();
+        });
+}
+
+// Оновлення списку обраних товарів
+function updateSelectedProducts() {
+    const container = document.getElementById('selected-products');
+    
+    if (selectedProducts.length === 0) {
+        container.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--color-text-light); background: var(--color-bg); border-radius: var(--radius-md);"><i class="fas fa-shopping-cart" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.3;"></i><p>Товари ще не обрані</p></div>';
+        return;
+    }
+    
+    container.innerHTML = `
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Товар</th>
+                    <th>SKU</th>
+                    <th>Ціна/день</th>
+                    <th>Кількість</th>
+                    <th>Застава</th>
+                    <th>Сума</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                ${selectedProducts.map(product => `
+                    <tr>
+                        <td><strong>${product.name}</strong></td>
+                        <td><small>${product.sku || 'N/A'}</small></td>
+                        <td>₴${product.price_per_day}</td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <button class="btn btn-secondary btn-sm" onclick="updateQuantity(${product.id}, -1)"><i class="fas fa-minus"></i></button>
+                                <span style="min-width: 30px; text-align: center;">${product.quantity}</span>
+                                <button class="btn btn-secondary btn-sm" onclick="updateQuantity(${product.id}, 1)"><i class="fas fa-plus"></i></button>
+                            </div>
+                        </td>
+                        <td>₴${product.deposit * product.quantity}</td>
+                        <td><strong>₴${product.price_per_day * product.quantity * orderData.days}</strong></td>
+                        <td>
+                            <button class="btn btn-secondary btn-sm" onclick="removeProduct(${product.id})"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    `;
+}
+
+// Оновлення кількості
+function updateQuantity(productId, change) {
+    const product = selectedProducts.find(p => p.id === productId);
+    if (product) {
+        product.quantity += change;
+        if (product.quantity <= 0) {
+            removeProduct(productId);
+        } else {
+            updateSelectedProducts();
+            calculateTotal();
+        }
+    }
+}
+
+// Видалення товару
+function removeProduct(productId) {
+    selectedProducts = selectedProducts.filter(p => p.id !== productId);
+    updateSelectedProducts();
+    calculateTotal();
+}
+
+// Розрахунок підсумку
+function calculateTotal() {
+    if (orderData.days === 0) {
+        return;
+    }
+    
+    let subtotal = 0;
+    let deposit = 0;
+    
+    selectedProducts.forEach(product => {
+        subtotal += product.price_per_day * product.quantity * orderData.days;
+        deposit += product.deposit * product.quantity;
+    });
+    
+    const discountPercent = parseFloat(document.getElementById('discount').value) || 0;
+    const discountAmount = subtotal * (discountPercent / 100);
+    const total = subtotal - discountAmount;
+    
+    orderData.subtotal = subtotal;
+    orderData.discount = discountAmount;
+    orderData.deposit = deposit;
+    orderData.total = total;
+    
+    document.getElementById('subtotal-amount').textContent = '₴' + subtotal.toFixed(2);
+    document.getElementById('discount-amount').textContent = '₴' + discountAmount.toFixed(2);
+    document.getElementById('deposit-amount').textContent = '₴' + deposit.toFixed(2);
+    document.getElementById('total-amount').textContent = '₴' + total.toFixed(2);
+}
+
+// Створення замовлення
+function createOrder(event) {
+    event.preventDefault();
+    
+    if (selectedProducts.length === 0) {
+        alert('Додайте товари до замовлення');
+        return;
+    }
+    
+    if (orderData.days === 0) {
+        alert('Виберіть дати оренди');
+        return;
+    }
+    
+    const formData = {
+        customer_firstname: document.getElementById('customer-firstname').value,
+        customer_lastname: document.getElementById('customer-lastname').value,
+        customer_phone: document.getElementById('customer-phone').value,
+        customer_email: document.getElementById('customer-email').value,
+        rental_start_date: document.getElementById('rental-start').value,
+        rental_end_date: document.getElementById('rental-end').value,
+        rental_days: orderData.days,
+        delivery_address: document.getElementById('delivery-address').value,
+        discount_percent: parseFloat(document.getElementById('discount').value) || 0,
+        customer_comment: document.getElementById('customer-comment').value,
+        manager_comment: document.getElementById('manager-comment').value,
+        order_items: selectedProducts,
+        subtotal: orderData.subtotal,
+        discount_amount: orderData.discount,
+        deposit_amount: orderData.deposit,
+        total: orderData.total
+    };
+    
+    document.getElementById('submit-btn').disabled = true;
+    document.getElementById('submit-btn').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Створення...';
+    
+    fetch('/api/manager/orders', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Замовлення успішно створено! Номер: ' + data.order_number);
+            window.location.href = '/manager';
+        } else {
+            alert('Помилка створення замовлення: ' + (data.message || 'Невідома помилка'));
+            document.getElementById('submit-btn').disabled = false;
+            document.getElementById('submit-btn').innerHTML = '<i class="fas fa-check"></i> Створити замовлення';
+        }
+    })
+    .catch(error => {
+        alert('Помилка: ' + error.message);
+        document.getElementById('submit-btn').disabled = false;
+        document.getElementById('submit-btn').innerHTML = '<i class="fas fa-check"></i> Створити замовлення';
+    });
+}
+
+// Завантаження категорій при завантаженні сторінки
+document.addEventListener('DOMContentLoaded', function() {
+    // Встановлюємо мінімальну дату (сьогодні)
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('rental-start').min = today;
+    document.getElementById('rental-end').min = today;
+    
+    // Завантажуємо категорії
+    fetch('/api/manager/categories')
+        .then(response => response.json())
+        .then(categories => {
+            const select = document.getElementById('product-category');
+            categories.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat.id;
+                option.textContent = cat.name;
+                select.appendChild(option);
+            });
+        })
+        .catch(error => console.error('Помилка завантаження категорій:', error));
+    
+    // Завантажуємо початковий список товарів
+    searchProducts('');
+});
+</script>
+
+<style>
+.product-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+    border-color: var(--color-primary);
+}
+</style>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,11 @@
+name: Products
+modelClass: Farforrent\Catalog\Models\Product
+form: $/farforrent/catalog/models/product/fields.yaml
+defaultRedirect: farforrent/catalog/products
+create:
+    redirect: 'farforrent/catalog/products/update/:id'
+    redirectClose: farforrent/catalog/products
+update:
+    redirect: farforrent/catalog/products
+    redirectClose: farforrent/catalog/products
+preview: {  }

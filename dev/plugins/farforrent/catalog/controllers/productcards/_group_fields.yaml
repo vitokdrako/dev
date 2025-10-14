@@ -1,0 +1,61 @@
+fields:
+  name_ua:
+    label: 'Назва (UA)'
+    type: text
+    span: left
+    required: true
+
+  name_en:
+    label: 'Name (EN)'
+    type: text
+    span: right
+
+  category:
+    label: Категорія
+    type: relation
+    nameFrom: name_ua
+    span: left
+    required: true
+
+  subcategory_id:
+    label: Підкатегорія
+    type: dropdown
+    span: right
+    required: true
+    dependsOn:
+      - category
+    scope: inCategory            # використовує scope у моделі Subcategory (як у Product)
+    emptyOption: 'Обрати підкатегорію'
+
+  material:
+    label: Матеріал
+    type: text
+    span: left
+
+  color:
+    label: Колір
+    type: text
+    span: right
+
+  rarity:
+    label: Рідкість
+    type: dropdown
+    options:
+      regular: regular
+      rare: rare
+      vintage: vintage
+    default: regular
+    span: left
+
+  rent_percent:
+    label: 'Ставка оренди (%)'
+    type: dropdown
+    options:
+      5: 5%
+      10: 10%
+      15: 15%
+      20: 20%
+      25: 25%
+      30: 30%
+    default: 20
+    span: right

@@ -1,0 +1,154 @@
+# ===================================
+#  Form Field Definitions
+# ===================================
+
+fields:
+    # Основна інформація
+    _section1:
+        label: Основна інформація
+        type: section
+
+    kind:
+        label: Тип замовлення
+        type: dropdown
+        options:
+            new: Нове
+            issue: Видача
+            return: Повернення
+            completed: Завершено
+        span: left
+        required: true
+
+    status:
+        label: Статус
+        type: dropdown
+        options:
+            draft: Чернетка
+            confirmed: Підтверджено
+            ready: Готово
+            issued: Видано
+            returned: Повернуто
+            cancelled: Скасовано
+        span: right
+        required: true
+
+    # Клієнт
+    _section2:
+        label: Інформація про клієнта
+        type: section
+
+    customer_name:
+        label: Ім'я клієнта
+        type: text
+        span: left
+        required: true
+        placeholder: Введіть ім'я
+
+    customer_phone:
+        label: Телефон
+        type: text
+        span: right
+        required: true
+        placeholder: +380...
+
+    customer_email:
+        label: Email
+        type: email
+        span: left
+        placeholder: email@example.com
+
+    customer_address:
+        label: Адреса
+        type: textarea
+        span: right
+        size: small
+        placeholder: Адреса доставки
+
+    # Дати
+    _section3:
+        label: Дати оренди
+        type: section
+
+    date_from:
+        label: Дата видачі
+        type: datepicker
+        mode: date
+        span: left
+        required: true
+
+    date_to:
+        label: Дата повернення
+        type: datepicker
+        mode: date
+        span: right
+        required: true
+
+    time_from:
+        label: Час видачі
+        type: text
+        span: left
+        placeholder: "14:00"
+
+    time_to:
+        label: Час повернення
+        type: text
+        span: right
+        placeholder: "14:00"
+
+    # Фінанси
+    _section4:
+        label: Фінансова інформація
+        type: section
+
+    rent_total:
+        label: Сума оренди (₴)
+        type: number
+        span: left
+        default: 0
+        step: 0.01
+
+    deposit_total:
+        label: Депозит (₴)
+        type: number
+        span: right
+        default: 0
+        step: 0.01
+
+    discount:
+        label: Знижка (₴)
+        type: number
+        span: left
+        default: 0
+        step: 0.01
+
+    delivery_price:
+        label: Доставка (₴)
+        type: number
+        span: right
+        default: 0
+        step: 0.01
+
+    # Додаткова інформація
+    _section5:
+        label: Додатково
+        type: section
+
+    note:
+        label: Коментар
+        type: textarea
+        size: large
+        placeholder: Додайте коментар до замовлення...
+
+secondaryTabs:
+    fields:
+        # Товари в замовленні
+        items:
+            tab: Товари
+            type: partial
+            path: $/farforrent/catalog/models/order/_items_field.htm
+
+        # Історія
+        history:
+            tab: Історія
+            type: partial
+            path: $/farforrent/catalog/models/order/_history.htm

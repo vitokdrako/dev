@@ -1,0 +1,104 @@
+1.0.1:
+    - 'Initialize plugin.'
+1.0.2:
+    - 'Created table farforrent_catalog_categories'
+    - builder_table_create_farforrent_catalog_categories.php
+1.0.3:
+    - 'Created table farforrent_catalog_subcategories'
+    - builder_table_create_farforrent_catalog_subcategories.php
+1.0.4:
+    - 'Updated table farforrent_catalog_subcategories'
+    - builder_table_update_farforrent_catalog_subcategory.php
+1.0.5:
+    - 'Updated table farforrent_catalog_subcategory'
+    - builder_table_update_farforrent_catalog_subcategories.php
+1.0.6:
+    - 'Updated table farforrent_catalog_categories'
+    - builder_table_update_farforrent_catalog_categories.php
+1.0.7:
+    - 'Updated table farforrent_catalog_categories'
+    - builder_table_update_farforrent_catalog_categories_2.php
+1.0.8:
+    - 'Updated table farforrent_catalog_categories'
+    - builder_table_update_farforrent_catalog_categories_3.php
+1.0.9:
+    - 'Updated table farforrent_catalog_categories'
+    - builder_table_update_farforrent_catalog_categories_4.php
+1.0.10:
+    - 'Updated table farforrent_catalog_categories'
+    - builder_table_update_farforrent_catalog_categories_5.php
+1.0.11:
+    - 'Updated table farforrent_catalog_categories'
+    - builder_table_update_farforrent_catalog_categories_6.php
+1.0.12:
+    - 'Updated table farforrent_catalog_subcategories'
+    - builder_table_update_farforrent_catalog_subcategory_2.php
+1.0.13:
+    - 'Updated table farforrent_catalog_subcategory'
+    - builder_table_update_farforrent_catalog_subcategories_2.php
+1.0.14:
+    - 'Updated table farforrent_catalog_categories'
+    - builder_table_update_farforrent_catalog_categories_7.php
+1.0.15:
+    - 'Updated table farforrent_catalog_subcategories'
+    - builder_table_update_farforrent_catalog_subcategories_3.php
+1.0.16:
+    - 'Updated table farforrent_catalog_categories'
+    - builder_table_update_farforrent_catalog_categories_8.php
+1.0.17:
+    - 'Updated table farforrent_catalog_subcategories'
+    - builder_table_update_farforrent_catalog_subcategories_4.php
+1.0.18:
+    - 'Created table farforrent_catalog_products'
+    - builder_table_create_farforrent_catalog_products.php
+1.0.19:
+    - 'Updated table farforrent_catalog_products'
+    - builder_table_update_farforrent_catalog_products.php
+1.0.20:
+    - 'Updated table farforrent_catalog_products'
+    - builder_table_update_farforrent_catalog_products_2.php
+1.0.21:
+    - 'Updated table farforrent_catalog_products'
+    - builder_table_update_farforrent_catalog_products_3.php
+1.0.22:
+    - 'Create pivot table for related products'
+    - create_product_related_table.php
+1.0.23:
+    - 'Updated table farforrent_catalog_products'
+    - builder_table_update_farforrent_catalog_products_4.php
+1.0.24:
+    - 'Updated table farforrent_catalog_products'
+    - builder_table_update_farforrent_catalog_products_5.php
+1.0.25:
+    - 'Updated table farforrent_catalog_products'
+    - builder_table_update_farforrent_catalog_products_6.php
+1.0.26:
+    - 'Updated table farforrent_catalog_products'
+    - builder_table_update_farforrent_catalog_products_7.php
+1.0.27:
+    - create_product_groups_table.php
+1.0.28:
+    - add_group_id_to_products.php
+1.0.29:
+    - 'Updated table farforrent_catalog_product_groups'
+    - builder_table_update_farforrent_catalog_product_groups.php
+1.0.30:
+    - 'Updated table farforrent_catalog_product_groups'
+    - builder_table_update_farforrent_catalog_product_groups_2.php
+1.0.31:
+    - 'Updated table farforrent_catalog_product_groups'
+    - builder_table_update_farforrent_catalog_product_groups_3.php
+1.0.32:
+    - seed_manager_group.php
+1.0.34:
+    - 'Updated table farforrent_catalog_products'
+    - builder_table_update_farforrent_catalog_products_8.php
+1.0.35:
+    - 'Updated table farforrent_catalog_product_groups'
+    - builder_table_update_farforrent_catalog_product_groups_4.php
+1.0.36:
+    - create_all_core_tables.php
+    - create_all_core_tables.php
+1.0.37:
+    - 'Created manager dashboard tables (payments, fees, deposits, damages, tasks, calendar_events, return_sheets)'
+    - create_manager_dashboard_tables.php

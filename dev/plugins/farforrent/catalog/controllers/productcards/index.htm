@@ -1,0 +1,56 @@
+
+
+
+
+<div class="layout p-2">
+  <div class="layout-row">
+    <form method="get" class="form-inline p-2">
+      <input type="text"
+             name="q"
+             value="<?= e($q ?? '') ?>"
+             class="form-control"
+             placeholder="Пошук...">
+      <button class="btn btn-primary" type="submit">
+        <i class="icon-search"></i>
+      </button>
+    </form>
+  </div>
+  
+   <!-- Блок створення нової групи -->
+  <div class="layout-row" id="create-group">
+    <?= $this->makePartial('create_group', ['groupForm' => $groupForm]) ?>
+  </div>
+
+  <!-- Список існуючих карток -->
+  <div class="layout-row" id="cards-list">
+    <?php if (!isset($groups) || !$groups->count()): ?>
+      <div class="callout callout-warning m-2">Поки ще немає груп (або нічого не знайдено).</div>
+    <?php else: ?>
+      <?php foreach ($groups as $group): ?>
+        <div id="card-<?= $group->id ?>">
+          <?= $this->makePartial('card', ['group' => $group]) ?>
+        </div>
+      <?php endforeach; ?>
+      <div class="p-2"><?= $groups->render() ?></div>
+    <?php endif; ?>
+  </div>
+</div>
+
+  <div class="layout-row">
+    <?php if (!isset($groups)): ?>
+      <div class="callout callout-danger m-2">Змінна <code>$groups</code> не встановлена.</div>
+    <?php elseif (!$groups->count()): ?>
+      <div class="callout callout-warning m-2">Нічого не знайдено.</div>
+    <?php else: ?>
+      <?php foreach ($groups as $group): ?>
+        <div id="card-<?= $group->id ?>">
+          <?= $this->makePartial('card', ['group' => $group]) ?>
+        </div>
+      <?php endforeach; ?>
+    <?php endif; ?>
+  </div>
+
+  <div class="layout-row p-2">
+    <?= isset($groups) && method_exists($groups, 'render') ? $groups->render() : '' ?>
+  </div>
+</div>

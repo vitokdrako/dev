@@ -1,0 +1,42 @@
+<?php
+  $i = (int) $idx;
+  $product = new \Farforrent\Catalog\Models\Product;
+  $imgW = $this->makeImageWidget($product, "variantsNew[$i]", "new_$i");
+?>
+<tr class="vrow">
+  <td class="img-cell">
+    <?= $imgW->renderField('image') ?>
+  </td>
+
+  <td><input name="variantsNew[<?= $i ?>][size]" class="form-control"></td>
+
+  <td>
+    <input name="variantsNew[<?= $i ?>][sku]" class="form-control" required>
+  </td>
+
+  <td><input name="variantsNew[<?= $i ?>][price]" class="form-control price" type="number" step="0.01" required></td>
+  <td class="rent t-center">0</td>
+  <td class="deposit t-center">0</td>
+
+  <td><input name="variantsNew[<?= $i ?>][height]"   class="form-control" type="number" step="0.01"></td>
+  <td><input name="variantsNew[<?= $i ?>][width]"    class="form-control" type="number" step="0.01"></td>
+  <td><input name="variantsNew[<?= $i ?>][diameter]" class="form-control" type="number" step="0.01"></td>
+  <td><input name="variantsNew[<?= $i ?>][length]"   class="form-control" type="number" step="0.01"></td>
+
+  <td>
+    <select name="variantsNew[<?= $i ?>][status]" class="form-control">
+      <option value="available">Доступний</option>
+      <option value="rented">В оренді</option>
+      <option value="damaged">Пошкоджений</option>
+      <option value="in_progress">На обробці</option>
+      <option value="for_sale">На продаж</option>
+    </select>
+  </td>
+
+  <td class="t-center">
+    <a href="javascript:;" class="btn btn-sm btn-link text-danger"
+       onclick="$(this).closest('tr').remove();">
+      <i class="icon-trash"></i>
+    </a>
+  </td>
+</tr>

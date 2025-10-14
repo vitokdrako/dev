@@ -1,0 +1,16 @@
+title: Пошкодження
+list: $/farforrent/catalog/models/damage/columns.yaml
+modelClass: Farforrent\Catalog\Models\Damage
+recordUrl: farforrent/catalog/damages/update/:id
+
+noRecordsMessage: Немає записів про пошкодження
+recordsPerPage: 20
+showPageNumbers: true
+defaultSort:
+    column: happened_at
+    direction: desc
+
+toolbar:
+    buttons: list_toolbar
+    search:
+        prompt: Пошук...

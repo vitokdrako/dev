@@ -1,0 +1,44 @@
+fields:
+    order_id:
+        label: Замовлення №
+        type: number
+        required: true
+        span: left
+
+    type:
+        label: Тип платежу
+        type: dropdown
+        options:
+            rent_payment: Оплата оренди
+            deposit_hold: Утримання депозиту
+            deposit_refund: Повернення депозиту
+            invoice_payment: Оплата рахунку
+            prepayment: Передоплата
+        required: true
+        span: right
+
+    amount:
+        label: Сума (₴)
+        type: number
+        required: true
+        step: 0.01
+        span: left
+
+    payment_method:
+        label: Метод оплати
+        type: dropdown
+        options:
+            cash: Готівка
+            card: Картка
+            transfer: Переказ
+        span: right
+
+    paid_at:
+        label: Дата та час оплати
+        type: datepicker
+        mode: datetime
+        required: true
+
+    notes:
+        label: Примітки
+        type: textarea

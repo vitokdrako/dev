@@ -1,0 +1,431 @@
+<!-- Issue Order - Dispatch Screen -->
+<div class="layout-row min-size">
+    <div class="layout-cell">
+        <div class="layout-relative">
+            <h1>
+                <i class="icon-paper-plane"></i>
+                Видача замовлення №<?= $order->order_number ?>
+                <small>Підготовка та видача товарів клієнту</small>
+            </h1>
+        </div>
+    </div>
+</div>
+
+<div class="layout-row">
+    <div class="layout-cell">
+        <div class="control-toolbar">
+            <div class="toolbar-item">
+                <a href="<?= Backend::url('farforrent/rental/manager') ?>" class="btn btn-default">
+                    <i class="icon-arrow-left"></i> Назад до дашборду
+                </a>
+            </div>
+            <div class="toolbar-item">
+                <span class="label label-<?= $order->status_color ?>"><?= $order->status_label ?></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="layout-row">
+    <div class="layout-cell">
+        <?= Form::open(['data-request' => 'onIssueOrder']) ?>
+        
+        <div class="layout layout-stack">
+            <!-- Customer Info Header -->
+            <div class="layout-row">
+                <div class="layout-cell">
+                    <div class="form-preview">
+                        <div class="form-preview-header">
+                            <h3><i class="icon-user"></i> Клієнт</h3>
+                        </div>
+                        <div class="form-preview-content">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <strong><?= $order->customer_firstname ?> <?= $order->customer_lastname ?></strong><br>
+                                    <span class="text-muted"><?= $order->customer_phone ?></span>
+                                </div>
+                                <div class="col-md-3">
+                                    <strong>Дати оренди:</strong><br>
+                                    <?= $order->rental_start_date->format('d.m.Y') ?> - <?= $order->rental_end_date->format('d.m.Y') ?><br>
+                                    <span class="text-muted"><?= $order->rental_days ?> днів</span>
+                                </div>
+                                <div class="col-md-3">
+                                    <strong>Сума до сплати:</strong><br>
+                                    <span class="text-success"><?= $order->formatted_total ?></span><br>
+                                    <span class="text-info">Застава: <?= $order->formatted_deposit ?></span>
+                                </div>
+                                <div class="col-md-3">
+                                    <?php if ($order->delivery_address): ?>
+                                        <strong>Адреса доставки:</strong><br>
+                                        <?= nl2br(e($order->delivery_address)) ?>
+                                    <?php endif ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Items for Issue -->
+            <div class="layout-row">
+                <div class="layout-cell">
+                    <div class="form-preview">
+                        <div class="form-preview-header">
+                            <h3><i class="icon-list"></i> Товари до видачі</h3>
+                            <div class="issue-status-badge">
+                                <span class="label label-success">ВИДАЧА</span>
+                            </div>
+                        </div>
+                        <div class="form-preview-content">
+                            <div class="issue-items-table">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th width="80">QR-код</th>
+                                            <th>Зображення</th>
+                                            <th>Найменування</th>
+                                            <th width="80">Кільк.</th>
+                                            <th width="100">Наявність</th>
+                                            <th width="120">Статус</th>
+                                            <th width="100">Дії</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($order->orderProducts as $item): ?>
+                                            <tr data-item-id="<?= $item->id ?>">
+                                                <td class="text-center">
+                                                    <div class="qr-code-mini">
+                                                        <img src="data:image/svg+xml;base64,<?= base64_encode('<svg width="60" height="60" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="60" fill="white"/><rect x="5" y="5" width="5" height="5" fill="black"/><rect x="15" y="5" width="5" height="5" fill="black"/><rect x="25" y="5" width="5" height="5" fill="black"/><rect x="5" y="15" width="5" height="5" fill="black"/><rect x="25" y="15" width="5" height="5" fill="black"/><rect x="5" y="25" width="5" height="5" fill="black"/><rect x="15" y="25" width="5" height="5" fill="black"/><rect x="25" y="25" width="5" height="5" fill="black"/></svg>') ?>" 
+                                                             alt="QR" class="qr-code-img">
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <?php if ($item->variant && $item->variant->product && $item->variant->product->featured_image): ?>
+                                                        <img src="<?= $item->variant->product->featured_image->getThumb(60, 60, 'crop') ?>" 
+                                                             alt="<?= e($item->product_name) ?>" class="product-thumb">
+                                                    <?php else: ?>
+                                                        <div class="no-image">
+                                                            <i class="icon-image"></i>
+                                                        </div>
+                                                    <?php endif ?>
+                                                </td>
+                                                <td>
+                                                    <strong><?= e($item->product_name) ?></strong><br>
+                                                    <small class="text-muted">
+                                                        <?= $item->formatted_rent_price ?>/день × <?= $item->rental_days ?> дн.
+                                                    </small>
+                                                </td>
+                                                <td class="text-center">
+                                                    <span class="quantity-badge"><?= $item->quantity ?></span>
+                                                </td>
+                                                <td class="text-center">
+                                                    <?php 
+                                                    $available = $item->variant ? $item->variant->available_quantity : 0;
+                                                    if ($available >= $item->quantity): ?>
+                                                        <span class="label label-success">В наявності</span>
+                                                    <?php else: ?>
+                                                        <span class="label label-danger">Нестача</span>
+                                                    <?php endif ?>
+                                                </td>
+                                                <td class="text-center">
+                                                    <select class="form-control input-sm issue-status" data-item-id="<?= $item->id ?>">
+                                                        <option value="ready">Готово</option>
+                                                        <option value="picked">Зібрано</option>
+                                                        <option value="missing">Відсутнє</option>
+                                                        <option value="damaged">Пошкоджено</option>
+                                                    </select>
+                                                </td>
+                                                <td class="text-center">
+                                                    <button type="button" class="btn btn-xs btn-info scan-item" data-item-id="<?= $item->id ?>">
+                                                        <i class="icon-qrcode"></i> Скан
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach ?>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <?php if ($order->customer_comment): ?>
+                                <div class="customer-comment">
+                                    <h5><i class="icon-comment"></i> Коментар клієнта:</h5>
+                                    <p class="well well-sm"><?= nl2br(e($order->customer_comment)) ?></p>
+                                </div>
+                            <?php endif ?>
+
+                            <div class="form-group">
+                                <label>Коментар до видачі</label>
+                                <textarea name="issue_notes" class="form-control" rows="3" 
+                                          placeholder="Додайте коментар або особливі вказівки щодо видачі..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Issue Summary -->
+            <div class="layout-row">
+                <div class="layout-cell">
+                    <div class="form-preview">
+                        <div class="form-preview-header">
+                            <h3><i class="icon-check"></i> Підсумок видачі</h3>
+                        </div>
+                        <div class="form-preview-content">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="issue-checklist">
+                                        <h5>Перевірки перед видачею:</h5>
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox" name="client_identity_verified" value="1" required>
+                                                Особа клієнта підтверджена (паспорт/посвідчення)
+                                            </label>
+                                        </div>
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox" name="deposit_received" value="1" required>
+                                                Застава отримана (готівка/картка/переказ)
+                                            </label>
+                                        </div>
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox" name="items_condition_ok" value="1" required>
+                                                Стан усіх товарів перевірений та задовільний
+                                            </label>
+                                        </div>
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox" name="return_terms_explained" value="1" required>
+                                                Умови повернення пояснені клієнту
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="issue-summary">
+                                        <div class="summary-row">
+                                            <span>Оренда (<?= $order->rental_days ?> дн.):</span>
+                                            <strong><?= $order->formatted_total ?></strong>
+                                        </div>
+                                        <div class="summary-row">
+                                            <span>Застава:</span>
+                                            <strong><?= $order->formatted_deposit ?></strong>
+                                        </div>
+                                        <hr>
+                                        <div class="summary-row total-row">
+                                            <span>До сплати:</span>
+                                            <strong><?= number_format($order->total + $order->deposit_amount, 0, ',', ' ') ?> ₴</strong>
+                                        </div>
+                                        
+                                        <div class="payment-methods">
+                                            <h6>Спосіб оплати:</h6>
+                                            <div class="radio">
+                                                <label><input type="radio" name="payment_method" value="cash" checked> Готівка</label>
+                                            </div>
+                                            <div class="radio">
+                                                <label><input type="radio" name="payment_method" value="card"> Картка</label>
+                                            </div>
+                                            <div class="radio">
+                                                <label><input type="radio" name="payment_method" value="transfer"> Переказ</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="layout-row">
+                <div class="layout-cell">
+                    <div class="form-buttons">
+                        <button type="submit" name="issue_order" value="1" class="btn btn-success btn-lg">
+                            <i class="icon-check"></i> Видати замовлення
+                        </button>
+                        <button type="button" class="btn btn-warning" onclick="sendCorrection()">
+                            <i class="icon-edit"></i> Відправити коректуровку
+                        </button>
+                        <a href="<?= Backend::url('farforrent/rental/manager') ?>" class="btn btn-default">
+                            <i class="icon-arrow-left"></i> Скасувати
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <?= Form::close() ?>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    // Scan item functionality
+    $('.scan-item').on('click', function() {
+        var itemId = $(this).data('item-id');
+        var $row = $(this).closest('tr');
+        
+        // Simulate QR code scan
+        $row.addClass('scanned');
+        $(this).html('<i class="icon-check"></i> Скановано').removeClass('btn-info').addClass('btn-success');
+        
+        // Update status to picked
+        $row.find('.issue-status').val('picked');
+        
+        // Show scan confirmation
+        $(this).closest('td').append('<small class="text-success"><br>Скановано</small>');
+    });
+
+    // Issue status change
+    $('.issue-status').on('change', function() {
+        var $row = $(this).closest('tr');
+        var status = $(this).val();
+        
+        $row.removeClass('status-ready status-picked status-missing status-damaged');
+        $row.addClass('status-' + status);
+        
+        if (status === 'missing' || status === 'damaged') {
+            $row.addClass('issue-problem');
+        } else {
+            $row.removeClass('issue-problem');
+        }
+    });
+
+    // Form validation before submit
+    $('form').on('submit', function(e) {
+        var checkedCount = $('input[type="checkbox"]:checked').length;
+        var totalChecks = $('input[type="checkbox"]').length;
+        
+        if (checkedCount < totalChecks) {
+            alert('Будь ласка, підтвердіть всі перевірки перед видачею');
+            e.preventDefault();
+            return false;
+        }
+
+        // Check if all items are ready
+        var problemItems = $('.issue-status option:selected').filter(function() {
+            return $(this).val() === 'missing' || $(this).val() === 'damaged';
+        });
+
+        if (problemItems.length > 0) {
+            if (!confirm('Деякі товари мають проблеми. Продовжити видачу?')) {
+                e.preventDefault();
+                return false;
+            }
+        }
+    });
+});
+
+function sendCorrection() {
+    alert('Функція надсилання коректуровки буде реалізована окремо');
+}
+</script>
+
+<style>
+.issue-status-badge {
+    background: #28a745;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.qr-code-mini {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.qr-code-img {
+    max-width: 100%;
+    max-height: 100%;
+    border: 1px solid #ddd;
+}
+
+.product-thumb {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.no-image {
+    width: 60px;
+    height: 60px;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    color: #999;
+}
+
+.quantity-badge {
+    background: #007bff;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-weight: bold;
+}
+
+.issue-items-table .table th {
+    background: #f8f9fa;
+    font-weight: 600;
+}
+
+.scanned {
+    background: #d4edda !important;
+}
+
+.status-missing,
+.status-damaged {
+    background: #f8d7da !important;
+}
+
+.issue-problem {
+    border-left: 4px solid #dc3545;
+}
+
+.customer-comment {
+    margin: 20px 0;
+    padding: 15px;
+    background: #f8f9fa;
+    border-left: 4px solid #007bff;
+}
+
+.issue-checklist .checkbox {
+    margin-bottom: 10px;
+}
+
+.issue-summary {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 6px;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.summary-row.total-row {
+    font-size: 18px;
+    font-weight: 600;
+    color: #28a745;
+    border-bottom: 2px solid #28a745;
+}
+
+.payment-methods {
+    margin-top: 15px;
+}
+
+.payment-methods .radio {
+    margin-bottom: 5px;
+}
+</style>

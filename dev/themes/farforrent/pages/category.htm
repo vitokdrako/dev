@@ -1,0 +1,100 @@
+title = "Категорія"
+url = "/category/:slug"
+layout = "default"
+
+[productList]
+categorySlug = "{{ :slug }}"
+productsPerPage = 12
+
+[categoryList]
+showTree = 1
+
+[cart]
+==
+{% set category = productList.category %}
+
+<div class="container">
+    <div class="row">
+        <!-- Breadcrumbs -->
+        <div class="col-md-12">
+            <ol class="breadcrumb">
+                <li><a href="{{ '/'|app }}">Головна</a></li>
+                <li><a href="{{ 'catalog'|app }}">Каталог</a></li>
+                {% if category %}
+                    <li class="active">{{ category.name }}</li>
+                {% endif %}
+            </ol>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Sidebar with Categories -->
+        <div class="col-md-3">
+            {% component 'categoryList' %}
+        </div>
+        
+        <!-- Products Grid -->
+        <div class="col-md-9">
+            {% if category %}
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="page-header">
+                            <h1>{{ category.name }}</h1>
+                            {% if category.description %}
+                                <div class="category-description">
+                                    {{ category.description|raw }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            
+            <!-- Sorting -->
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="sorting-panel">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <p class="results-count">Показано товарів: <strong>{{ products.total ?? 0 }}</strong></p>
+                            </div>
+                            <div class="col-sm-6 text-right">
+                                <div class="form-inline">
+                                    <label>Сортувати за:</label>
+                                    <select class="form-control input-sm" onchange="sortProducts(this.value)">
+                                        <option value="name_asc">Назвою (А-Я)</option>
+                                        <option value="name_desc">Назвою (Я-А)</option>
+                                        <option value="price_asc">Ціною (дешевше)</option>
+                                        <option value="price_desc">Ціною (дорожче)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row product-grid">
+                {% component 'productList' %}
+            </div>
+            
+            {% if category and category.description_bottom %}
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="category-description-bottom">
+                            {{ category.description_bottom|raw }}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function sortProducts(sort) {
+    var url = new URL(window.location);
+    url.searchParams.set('sort', sort);
+    window.location.href = url.toString();
+}
+</script>

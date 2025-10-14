@@ -1,0 +1,466 @@
+<!-- Process Return - Return & Damage Assessment -->
+<div class="layout-row min-size">
+    <div class="layout-cell">
+        <div class="layout-relative">
+            <h1>
+                <i class="icon-undo"></i>
+                Обробка повернення №<?= $order->order_number ?>
+                <small>Приймання та оцінка стану товарів</small>
+            </h1>
+        </div>
+    </div>
+</div>
+
+<div class="layout-row">
+    <div class="layout-cell">
+        <div class="control-toolbar">
+            <div class="toolbar-item">
+                <a href="<?= Backend::url('farforrent/rental/manager') ?>" class="btn btn-default">
+                    <i class="icon-arrow-left"></i> Назад до дашборду
+                </a>
+            </div>
+            <div class="toolbar-item">
+                <span class="label label-info">ПОВЕРНЕННЯ</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="layout-row">
+    <div class="layout-cell">
+        <?= Form::open(['data-request' => 'onProcessReturn']) ?>
+        
+        <div class="layout layout-stack">
+            <!-- Return Header Info -->
+            <div class="layout-row">
+                <div class="layout-cell">
+                    <div class="form-preview">
+                        <div class="form-preview-header">
+                            <h3><i class="icon-info"></i> Інформація про оренду</h3>
+                        </div>
+                        <div class="form-preview-content">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <strong><?= $order->customer_firstname ?> <?= $order->customer_lastname ?></strong><br>
+                                    <span class="text-muted"><?= $order->customer_phone ?></span>
+                                </div>
+                                <div class="col-md-3">
+                                    <strong>Період оренди:</strong><br>
+                                    <?= $order->rental_start_date->format('d.m.Y') ?> - <?= $order->rental_end_date->format('d.m.Y') ?><br>
+                                    <span class="text-muted">Видано: <?= $order->issued_at ? $order->issued_at->format('d.m.Y H:i') : 'Невідомо' ?></span>
+                                </div>
+                                <div class="col-md-3">
+                                    <strong>Повернення:</strong><br>
+                                    <?php 
+                                    $today = \Carbon\Carbon::today();
+                                    $daysLate = $order->rental_end_date < $today ? $order->rental_end_date->diffInDays($today) : 0;
+                                    ?>
+                                    <?= $today->format('d.m.Y') ?>
+                                    <?php if ($daysLate > 0): ?>
+                                        <br><span class="text-danger"><strong>Прострочка: <?= $daysLate ?> дн.</strong></span>
+                                    <?php else: ?>
+                                        <br><span class="text-success">В строк</span>
+                                    <?php endif ?>
+                                </div>
+                                <div class="col-md-3">
+                                    <strong>Сума оренди:</strong><br>
+                                    <?= $order->formatted_total ?><br>
+                                    <span class="text-info">Застава: <?= $order->formatted_deposit ?></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Items Return Assessment -->
+            <div class="layout-row">
+                <div class="layout-cell">
+                    <div class="form-preview">
+                        <div class="form-preview-header">
+                            <h3><i class="icon-list"></i> Оцінка стану товарів</h3>
+                        </div>
+                        <div class="form-preview-content">
+                            <div class="return-items-table">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th width="80">QR-код</th>
+                                            <th>Товар</th>
+                                            <th width="80">Кільк.</th>
+                                            <th width="120">Стан</th>
+                                            <th width="200">Опис проблеми</th>
+                                            <th width="120">Сума шкоди</th>
+                                            <th width="100">Дії</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($order->orderProducts as $index => $item): ?>
+                                            <tr data-item-id="<?= $item->id ?>">
+                                                <td class="text-center">
+                                                    <div class="qr-code-return">
+                                                        <img src="data:image/svg+xml;base64,<?= base64_encode('<svg width="60" height="60" xmlns="http://www.w3.org/2000/svg"><rect width="60" height="60" fill="white"/><rect x="5" y="5" width="5" height="5" fill="black"/><rect x="15" y="5" width="5" height="5" fill="black"/><rect x="25" y="5" width="5" height="5" fill="black"/><rect x="5" y="15" width="5" height="5" fill="black"/><rect x="25" y="15" width="5" height="5" fill="black"/><rect x="5" y="25" width="5" height="5" fill="black"/><rect x="15" y="25" width="5" height="5" fill="black"/><rect x="25" y="25" width="5" height="5" fill="black"/></svg>') ?>" 
+                                                             alt="QR" class="qr-code-img">
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <strong><?= e($item->product_name) ?></strong><br>
+                                                    <small class="text-muted">
+                                                        Оренда: <?= $item->formatted_rent_price ?>/день × <?= $item->rental_days ?> дн.
+                                                    </small>
+                                                </td>
+                                                <td class="text-center">
+                                                    <span class="quantity-badge"><?= $item->quantity ?></span>
+                                                </td>
+                                                <td>
+                                                    <select class="form-control input-sm return-condition" 
+                                                            name="returned_items[<?= $index ?>][condition]" 
+                                                            data-item-id="<?= $item->id ?>"
+                                                            data-item-price="<?= $item->variant ? $item->variant->price : 0 ?>">
+                                                        <option value="ok">OK</option>
+                                                        <option value="dirty">Потрібна чистка</option>
+                                                        <option value="damaged">Пошкоджено</option>
+                                                        <option value="lost">Втрачено</option>
+                                                    </select>
+                                                    <input type="hidden" name="returned_items[<?= $index ?>][order_product_id]" value="<?= $item->id ?>">
+                                                </td>
+                                                <td>
+                                                    <textarea class="form-control input-sm damage-description" 
+                                                              name="returned_items[<?= $index ?>][damage_description]"
+                                                              rows="2" 
+                                                              placeholder="Опишіть проблему..."
+                                                              style="display: none;"></textarea>
+                                                </td>
+                                                <td>
+                                                    <div class="damage-cost-container" style="display: none;">
+                                                        <input type="number" 
+                                                               class="form-control input-sm damage-cost" 
+                                                               name="returned_items[<?= $index ?>][damage_cost]"
+                                                               placeholder="₴" 
+                                                               min="0" 
+                                                               step="10">
+                                                        <select class="form-control input-sm damage-type" 
+                                                                name="returned_items[<?= $index ?>][damage_type]"
+                                                                style="margin-top: 5px;">
+                                                            <option value="cleaning_fee">Чистка</option>
+                                                            <option value="repairable">Ремонт</option>
+                                                            <option value="irrepairable">Списання</option>
+                                                            <option value="loss">Втрата</option>
+                                                        </select>
+                                                    </div>
+                                                    <span class="ok-status" style="color: #28a745; font-weight: bold;">OK</span>
+                                                </td>
+                                                <td class="text-center">
+                                                    <button type="button" class="btn btn-xs btn-info scan-return" data-item-id="<?= $item->id ?>">
+                                                        <i class="icon-qrcode"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Financial Summary -->
+            <div class="layout-row">
+                <div class="layout-cell">
+                    <div class="form-preview">
+                        <div class="form-preview-header">
+                            <h3><i class="icon-calculator"></i> Фінансові розрахунки</h3>
+                        </div>
+                        <div class="form-preview-content">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="late-fee-section">
+                                        <h5>Пенальті за прострочку</h5>
+                                        <?php if ($daysLate > 0): ?>
+                                            <div class="alert alert-warning">
+                                                <strong>Прострочка: <?= $daysLate ?> днів</strong><br>
+                                                Щоденна ставка: <?= number_format($order->total / $order->rental_days, 0) ?> ₴/день<br>
+                                                <input type="hidden" name="late_fee_days" value="<?= $daysLate ?>">
+                                                <input type="hidden" name="daily_rate" value="<?= $order->total / $order->rental_days ?>">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Пенальті за прострочку</label>
+                                                <input type="number" 
+                                                       name="late_fee" 
+                                                       id="late-fee" 
+                                                       class="form-control" 
+                                                       value="<?= $daysLate * ($order->total / $order->rental_days) ?>"
+                                                       min="0">
+                                            </div>
+                                        <?php else: ?>
+                                            <p class="text-success">Повернення в строк, пенальті не нараховується</p>
+                                            <input type="hidden" name="late_fee" value="0">
+                                        <?php endif ?>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="return-summary">
+                                        <h5>Підсумок повернення</h5>
+                                        <div class="summary-table">
+                                            <div class="summary-row">
+                                                <span>Оренда:</span>
+                                                <strong><?= $order->formatted_total ?></strong>
+                                            </div>
+                                            <div class="summary-row">
+                                                <span>Застава сплачена:</span>
+                                                <strong><?= $order->formatted_deposit ?></strong>
+                                            </div>
+                                            <div class="summary-row late-fee-row" style="display: none;">
+                                                <span>Пенальті:</span>
+                                                <strong id="late-fee-display">₴ 0</strong>
+                                            </div>
+                                            <div class="summary-row damage-fee-row" style="display: none;">
+                                                <span>Сума шкоди:</span>
+                                                <strong id="damage-fee-display">₴ 0</strong>
+                                            </div>
+                                            <div class="summary-row cleaning-fee-row" style="display: none;">
+                                                <span>Чистка:</span>
+                                                <strong id="cleaning-fee-display">₴ 0</strong>
+                                            </div>
+                                            <hr>
+                                            <div class="summary-row total-row">
+                                                <span>До повернення заставі:</span>
+                                                <strong id="deposit-refund">₴ <?= number_format($order->deposit_amount) ?></strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Коментар до повернення</label>
+                                <textarea name="return_notes" class="form-control" rows="3" 
+                                          placeholder="Додайте коментар про стан товарів або особливості повернення..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="layout-row">
+                <div class="layout-cell">
+                    <div class="form-buttons">
+                        <button type="submit" name="process_return" value="1" class="btn btn-success btn-lg">
+                            <i class="icon-check"></i> Завершити повернення
+                        </button>
+                        <button type="button" class="btn btn-warning" onclick="generateInvoice()">
+                            <i class="icon-file-text"></i> Відправити рахунок
+                        </button>
+                        <button type="button" class="btn btn-info" onclick="printReport()">
+                            <i class="icon-print"></i> Друкувати звіт
+                        </button>
+                        <a href="<?= Backend::url('farforrent/rental/manager') ?>" class="btn btn-default">
+                            <i class="icon-arrow-left"></i> Скасувати
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <?= Form::close() ?>
+    </div>
+</div>
+
+<script>
+var originalDeposit = <?= $order->deposit_amount ?>;
+var totalDamageCost = 0;
+var totalCleaningCost = 0;
+var lateFee = <?= $daysLate * ($order->total / $order->rental_days) ?>;
+
+$(document).ready(function() {
+    // Return condition change handler
+    $('.return-condition').on('change', function() {
+        var condition = $(this).val();
+        var $row = $(this).closest('tr');
+        var itemPrice = parseFloat($(this).data('item-price')) || 0;
+        
+        $row.removeClass('condition-ok condition-dirty condition-damaged condition-lost');
+        $row.addClass('condition-' + condition);
+        
+        if (condition === 'ok') {
+            $row.find('.damage-description, .damage-cost-container').hide();
+            $row.find('.ok-status').show();
+            $row.find('.damage-cost').val(0);
+        } else {
+            $row.find('.damage-description, .damage-cost-container').show();
+            $row.find('.ok-status').hide();
+            
+            // Auto-calculate damage cost based on condition and item price
+            var estimatedCost = 0;
+            switch(condition) {
+                case 'dirty':
+                    estimatedCost = Math.min(200, itemPrice * 0.1); // Min 200₴ or 10% of price
+                    $row.find('.damage-type').val('cleaning_fee');
+                    break;
+                case 'damaged':
+                    estimatedCost = itemPrice * 0.3; // 30% of price
+                    $row.find('.damage-type').val('repairable');
+                    break;
+                case 'lost':
+                    estimatedCost = itemPrice * 0.85; // 85% of price
+                    $row.find('.damage-type').val('loss');
+                    break;
+            }
+            
+            $row.find('.damage-cost').val(Math.round(estimatedCost));
+        }
+        
+        updateFinancialSummary();
+    });
+
+    // Damage cost change handler
+    $(document).on('input', '.damage-cost', function() {
+        updateFinancialSummary();
+    });
+
+    // Late fee change handler
+    $('#late-fee').on('input', function() {
+        lateFee = parseFloat($(this).val()) || 0;
+        updateFinancialSummary();
+    });
+
+    // Scan return functionality
+    $('.scan-return').on('click', function() {
+        var $row = $(this).closest('tr');
+        $row.addClass('scanned');
+        $(this).html('<i class="icon-check"></i>').removeClass('btn-info').addClass('btn-success');
+    });
+
+    // Initialize summary
+    updateFinancialSummary();
+});
+
+function updateFinancialSummary() {
+    totalDamageCost = 0;
+    totalCleaningCost = 0;
+    
+    $('.damage-cost').each(function() {
+        var cost = parseFloat($(this).val()) || 0;
+        var type = $(this).closest('tr').find('.damage-type').val();
+        
+        if (type === 'cleaning_fee') {
+            totalCleaningCost += cost;
+        } else {
+            totalDamageCost += cost;
+        }
+    });
+    
+    // Update display
+    $('#late-fee-display').text('₴ ' + formatNumber(lateFee));
+    $('#damage-fee-display').text('₴ ' + formatNumber(totalDamageCost));
+    $('#cleaning-fee-display').text('₴ ' + formatNumber(totalCleaningCost));
+    
+    // Show/hide rows
+    if (lateFee > 0) $('.late-fee-row').show();
+    if (totalDamageCost > 0) $('.damage-fee-row').show();
+    if (totalCleaningCost > 0) $('.cleaning-fee-row').show();
+    
+    // Calculate deposit refund
+    var totalDeductions = lateFee + totalDamageCost + totalCleaningCost;
+    var refund = Math.max(0, originalDeposit - totalDeductions);
+    
+    $('#deposit-refund').text('₴ ' + formatNumber(refund));
+    
+    // Update refund color
+    if (refund < originalDeposit) {
+        $('#deposit-refund').parent().addClass('partial-refund');
+    } else {
+        $('#deposit-refund').parent().removeClass('partial-refund');
+    }
+}
+
+function formatNumber(num) {
+    return Math.round(num).toLocaleString('uk-UA');
+}
+
+function generateInvoice() {
+    alert('Функція генерації рахунку буде реалізована окремо');
+}
+
+function printReport() {
+    window.print();
+}
+</script>
+
+<style>
+.qr-code-return {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.condition-ok {
+    background: #d4edda !important;
+}
+
+.condition-dirty {
+    background: #fff3cd !important;
+}
+
+.condition-damaged {
+    background: #f8d7da !important;
+}
+
+.condition-lost {
+    background: #d1ecf1 !important;
+    color: #0c5460;
+}
+
+.scanned {
+    border-left: 4px solid #28a745;
+}
+
+.return-items-table .table th {
+    background: #f8f9fa;
+    font-weight: 600;
+}
+
+.return-summary {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 6px;
+}
+
+.summary-table .summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.summary-row.total-row {
+    font-size: 18px;
+    font-weight: 600;
+    color: #28a745;
+    border-bottom: 2px solid #28a745;
+    margin-top: 10px;
+    padding-top: 15px;
+}
+
+.partial-refund {
+    color: #dc3545 !important;
+}
+
+.late-fee-section .alert {
+    margin-bottom: 15px;
+}
+
+.damage-cost-container input,
+.damage-cost-container select {
+    margin-bottom: 5px;
+}
+
+.ok-status {
+    font-weight: bold;
+    color: #28a745;
+}
+</style>

@@ -1,0 +1,11 @@
+name: Платіж
+form: $/farforrent/catalog/models/payment/fields.yaml
+modelClass: Farforrent\Catalog\Models\Payment
+
+create:
+    title: Новий платіж
+    redirect: farforrent/catalog/payments
+
+update:
+    title: Редагувати платіж
+    redirect: farforrent/catalog/payments

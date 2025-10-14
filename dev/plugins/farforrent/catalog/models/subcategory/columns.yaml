@@ -1,0 +1,37 @@
+columns:
+    name_ua:
+        label: Назва
+        type: text
+        searchable: true
+        sortable: true
+    name_en:
+        label: name_en
+        type: text
+        searchable: true
+        sortable: true
+    slug:
+        label: Генератор
+        type: text
+        searchable: true
+        sortable: true
+    image:
+        label: Зображеня
+        type: text
+        searchable: true
+        sortable: true
+    created_at:
+        label: Створено
+        type: datetime
+        searchable: true
+        sortable: true
+    updated_at:
+        label: Оновлено
+        type: datetime
+        searchable: true
+        sortable: true
+    id:
+        label: id
+        type: number
+    category_id:
+        label: category_id
+        type: number

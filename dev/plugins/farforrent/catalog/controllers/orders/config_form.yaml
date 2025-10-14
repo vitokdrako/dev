@@ -1,0 +1,20 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+name: Замовлення
+form: $/farforrent/catalog/models/order/fields.yaml
+modelClass: Farforrent\Catalog\Models\Order
+
+create:
+    title: Створити замовлення
+    redirect: farforrent/catalog/orders/update/:id
+    redirectClose: farforrent/catalog/orders
+
+update:
+    title: Редагувати замовлення №:id
+    redirect: farforrent/catalog/orders
+    redirectClose: farforrent/catalog/orders
+
+preview:
+    title: Переглянути замовлення №:id

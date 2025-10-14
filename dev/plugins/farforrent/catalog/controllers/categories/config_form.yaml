@@ -1,0 +1,10 @@
+name: Categories
+modelClass: Farforrent\Catalog\Models\Category
+form: $/farforrent/catalog/models/category/fields.yaml
+defaultRedirect: farforrent/catalog/categories
+create:
+    redirect: 'farforrent/catalog/categories/update/:id'
+    redirectClose: farforrent/catalog/categories
+update:
+    redirect: farforrent/catalog/categories
+    redirectClose: farforrent/catalog/categories

@@ -1,0 +1,16 @@
+title: Платежі
+list: $/farforrent/catalog/models/payment/columns.yaml
+modelClass: Farforrent\Catalog\Models\Payment
+recordUrl: farforrent/catalog/payments/update/:id
+
+noRecordsMessage: Немає платежів
+recordsPerPage: 20
+showPageNumbers: true
+defaultSort:
+    column: paid_at
+    direction: desc
+
+toolbar:
+    buttons: list_toolbar
+    search:
+        prompt: Пошук...

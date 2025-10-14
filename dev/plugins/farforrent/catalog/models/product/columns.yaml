@@ -1,0 +1,89 @@
+columns:
+    group[name_ua]:
+        label: Група
+        searchable: true
+        sortable: true
+    id:
+        label: Айдішка
+        type: number
+    columns:
+    image:
+        label: Зображення
+        type: partial
+        path: $/farforrent/catalog/models/productgroup/_image.htm
+        sortable: false
+        width: 90px
+    category:
+        label: Категорія
+        type: number
+        searchable: true
+        sortable: true
+        select: name_ua
+        relation: category
+    subcategory:
+        label: Підкатегорія
+        type: number
+        searchable: true
+        sortable: true
+        select: name_ua
+        relation: subcategory
+    name_ua:
+        label: Назва
+        type: text
+    name_en:
+        label: name_en
+        type: text
+        invisible: true
+    sku:
+        label: Артикул
+        readOnly: true
+        comment: Генерується автоматично або через тумблер «Оновити SKU».
+        type: text
+    quantity:
+        label: Кількість
+        type: number
+        searchable: true
+    price:
+        label: Ціна
+        type: number
+    rent_price:
+        label: 'Ціна оренди'
+        type: number
+    rarity:
+        label: Цінність
+        type: text
+    deposit:
+        label: Застава
+        type: number
+    material:
+        label: Матеріал
+        type: text
+    color:
+        label: Колір
+        type: text
+    size:
+        label: Розмір
+        type: text
+    damage_price:
+        label: Ушкодження
+        type: number
+        invisible: true
+    status:
+        label: Статус
+        type: text
+    barcode:
+        label: Штрихкод
+        type: text
+    created_at:
+        label: Створено
+        type: datetime
+    updated_at:
+        label: Оновлено
+        type: datetime
+    deleted_at:
+        label: Видалити
+        type: datetime
+        invisible: true
+    comment:
+        label: comment
+        type: text

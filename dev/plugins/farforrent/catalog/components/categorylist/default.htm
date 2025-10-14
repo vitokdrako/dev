@@ -1,0 +1,31 @@
+{% if categories.count %}
+    <div class="category-list">
+        <h4>Категорії товарів</h4>
+        <ul class="list-unstyled">
+            {% for category in categories %}
+                <li>
+                    <a href="{{ 'category/'~category.slug|app }}">
+                        {{ category.name }}
+                        {% if category.products_count > 0 %}
+                            <span class="badge">{{ category.products_count }}</span>
+                        {% endif %}
+                    </a>
+                    {% if category.children.count %}
+                        <ul class="list-unstyled category-children">
+                            {% for child in category.children %}
+                                <li>
+                                    <a href="{{ 'category/'~child.slug|app }}">
+                                        {{ child.name }}
+                                        {% if child.products_count > 0 %}
+                                            <span class="badge">{{ child.products_count }}</span>
+                                        {% endif %}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}

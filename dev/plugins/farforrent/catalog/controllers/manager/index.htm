@@ -1,0 +1,200 @@
+<!-- Manager Dashboard -->
+<div class="layout-row min-size">
+    <?= $this->makePartial('dashboard_header') ?>
+</div>
+
+<div class="layout-row">
+    <div class="layout-cell">
+        <div class="control-toolbar">
+            <div class="toolbar-item toolbar-primary">
+                <a href="<?= Backend::url('farforrent/rental/manager/createorder') ?>" class="btn btn-primary">
+                    <i class="icon-plus"></i> Нове замовлення
+                </a>
+            </div>
+            <div class="toolbar-item">
+                <a href="<?= Backend::url('farforrent/rental/orders') ?>" class="btn btn-default">
+                    <i class="icon-list"></i> Всі замовлення
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="layout-row">
+    <div class="layout-cell">
+        <!-- Statistics Cards -->
+        <div class="row" style="margin-bottom: 20px;">
+            <div class="col-sm-4">
+                <div class="report-widget">
+                    <div class="report-widget-header">
+                        <h3><?= $todayStats['issues_today'] ?></h3>
+                        <p>Видач сьогодні</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="report-widget">
+                    <div class="report-widget-header">
+                        <h3><?= $todayStats['returns_today'] ?></h3>
+                        <p>Повернень сьогодні</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="report-widget">
+                    <div class="report-widget-header">
+                        <h3>₴ <?= number_format($todayStats['total_revenue_today']) ?></h3>
+                        <p>Дохід сьогодні</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Cards Grid -->
+        <div class="row">
+            <!-- New Orders Card -->
+            <div class="col-md-6 col-lg-3">
+                <div class="manager-card manager-card-new">
+                    <div class="card-header">
+                        <h4><i class="icon-file-o"></i> Нові замовлення</h4>
+                        <span class="badge"><?= count($newOrders) ?></span>
+                    </div>
+                    <div class="card-body">
+                        <?php if (count($newOrders)): ?>
+                            <?php foreach ($newOrders as $order): ?>
+                                <div class="order-item" data-order-id="<?= $order->id ?>">
+                                    <div class="order-info">
+                                        <strong><?= $order->order_number ?></strong>
+                                        <div class="customer-name"><?= $order->customer_firstname ?> <?= $order->customer_lastname ?></div>
+                                        <div class="order-details">
+                                            <span class="amount"><?= $order->formatted_total ?></span>
+                                            <span class="deposit">Застава: <?= $order->formatted_deposit ?></span>
+                                        </div>
+                                        <div class="order-dates">
+                                            <?= $order->rental_start_date->format('d.m') ?> - <?= $order->rental_end_date->format('d.m') ?>
+                                            (<?= $order->rental_days ?> дн.)
+                                        </div>
+                                    </div>
+                                    <div class="order-actions">
+                                        <a href="<?= Backend::url('farforrent/rental/orders/update/'.$order->id) ?>" 
+                                           class="btn btn-sm btn-default">Відкрити</a>
+                                    </div>
+                                </div>
+                            <?php endforeach ?>
+                        <?php else: ?>
+                            <p class="no-data">Немає нових замовлень</p>
+                        <?php endif ?>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ready for Issue Card -->
+            <div class="col-md-6 col-lg-3">
+                <div class="manager-card manager-card-issue">
+                    <div class="card-header">
+                        <h4><i class="icon-paper-plane"></i> Готово до видачі</h4>
+                        <span class="badge badge-warning"><?= count($readyForIssue) ?></span>
+                    </div>
+                    <div class="card-body">
+                        <?php if (count($readyForIssue)): ?>
+                            <?php foreach ($readyForIssue as $order): ?>
+                                <div class="order-item" data-order-id="<?= $order->id ?>">
+                                    <div class="order-info">
+                                        <strong><?= $order->order_number ?></strong>
+                                        <div class="customer-name"><?= $order->customer_firstname ?> <?= $order->customer_lastname ?></div>
+                                        <div class="order-details">
+                                            <span class="amount"><?= $order->formatted_total ?></span>
+                                            <span class="deposit">Застава: <?= $order->formatted_deposit ?></span>
+                                        </div>
+                                        <div class="order-dates">
+                                            Видача: <?= $order->rental_start_date->format('d.m.Y') ?>
+                                        </div>
+                                    </div>
+                                    <div class="order-actions">
+                                        <a href="<?= Backend::url('farforrent/rental/manager/issueorder/'.$order->id) ?>" 
+                                           class="btn btn-sm btn-success">Видати</a>
+                                    </div>
+                                </div>
+                            <?php endforeach ?>
+                        <?php else: ?>
+                            <p class="no-data">Немає готових до видачі</p>
+                        <?php endif ?>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Returns Due Card -->
+            <div class="col-md-6 col-lg-3">
+                <div class="manager-card manager-card-return">
+                    <div class="card-header">
+                        <h4><i class="icon-undo"></i> Час повернення</h4>
+                        <span class="badge badge-info"><?= count($returnsDue) ?></span>
+                    </div>
+                    <div class="card-body">
+                        <?php if (count($returnsDue)): ?>
+                            <?php foreach ($returnsDue as $order): ?>
+                                <div class="order-item" data-order-id="<?= $order->id ?>">
+                                    <div class="order-info">
+                                        <strong><?= $order->order_number ?></strong>
+                                        <div class="customer-name"><?= $order->customer_firstname ?> <?= $order->customer_lastname ?></div>
+                                        <div class="order-details">
+                                            <span class="amount"><?= $order->formatted_total ?></span>
+                                            <span class="deposit">Застава: <?= $order->formatted_deposit ?></span>
+                                        </div>
+                                        <div class="order-dates return-date">
+                                            Повернення: <?= $order->rental_end_date->format('d.m.Y') ?>
+                                            <?php if ($order->rental_end_date < \Carbon\Carbon::today()): ?>
+                                                <span class="overdue">ПРОСТРОЧЕНО</span>
+                                            <?php endif ?>
+                                        </div>
+                                    </div>
+                                    <div class="order-actions">
+                                        <a href="<?= Backend::url('farforrent/rental/orders/update/'.$order->id) ?>" 
+                                           class="btn btn-sm btn-default">Деталі</a>
+                                    </div>
+                                </div>
+                            <?php endforeach ?>
+                        <?php else: ?>
+                            <p class="no-data">Немає повернень сьогодні</p>
+                        <?php endif ?>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pending Returns Card -->
+            <div class="col-md-6 col-lg-3">
+                <div class="manager-card manager-card-process">
+                    <div class="card-header">
+                        <h4><i class="icon-tasks"></i> Обробити повернення</h4>
+                        <span class="badge badge-danger"><?= count($pendingReturns) ?></span>
+                    </div>
+                    <div class="card-body">
+                        <?php if (count($pendingReturns)): ?>
+                            <?php foreach ($pendingReturns as $order): ?>
+                                <div class="order-item" data-order-id="<?= $order->id ?>">
+                                    <div class="order-info">
+                                        <strong><?= $order->order_number ?></strong>
+                                        <div class="customer-name"><?= $order->customer_firstname ?> <?= $order->customer_lastname ?></div>
+                                        <div class="order-details">
+                                            <span class="amount"><?= $order->formatted_total ?></span>
+                                            <span class="deposit">Застава: <?= $order->formatted_deposit ?></span>
+                                        </div>
+                                        <div class="order-dates">
+                                            Повернуто: <?= $order->rental_end_date->format('d.m.Y') ?>
+                                        </div>
+                                    </div>
+                                    <div class="order-actions">
+                                        <a href="<?= Backend::url('farforrent/rental/manager/processreturn/'.$order->id) ?>" 
+                                           class="btn btn-sm btn-warning">Обробити</a>
+                                    </div>
+                                </div>
+                            <?php endforeach ?>
+                        <?php else: ?>
+                            <p class="no-data">Немає повернень для обробки</p>
+                        <?php endif ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

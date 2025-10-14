@@ -1,0 +1,38 @@
+# ===================================
+#  List Behavior Config
+# ===================================
+
+title: Замовлення
+list: $/farforrent/catalog/models/order/columns.yaml
+modelClass: Farforrent\Catalog\Models\Order
+recordUrl: farforrent/catalog/orders/update/:id
+
+# Кнопка створення
+noRecordsMessage: Немає замовлень
+recordsPerPage: 20
+showPageNumbers: true
+showSorting: true
+defaultSort:
+    column: created_at
+    direction: desc
+
+toolbar:
+    buttons: list_toolbar
+    search:
+        prompt: Пошук замовлень...
+        mode: all
+        scope: searchOrders
+
+showCheckboxes: true
+
+# Фільтри
+filter:
+    scopes:
+        kind:
+            label: Тип
+            type: group
+            conditions: kind = :filtered
+        status:
+            label: Статус
+            type: group
+            conditions: status = :filtered

@@ -1,0 +1,10 @@
+import:
+    title: Імпорт категорій
+    modelClass: Farforrent\Catalog\Models\CategoryImport
+    list: $/farforrent/catalog/models/category/columns.yaml
+
+export:
+    title: Експорт категорій
+    modelClass: Farforrent\Catalog\Models\CategoryExport
+    list: $/farforrent/catalog/models/category/columns.yaml
+    fileName: categories.csv

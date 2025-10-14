@@ -1,0 +1,12 @@
+name: Product Group
+modelClass: Farforrent\Catalog\Models\ProductGroup
+form: $/farforrent/catalog/models/productgroup/fields.yaml
+defaultRedirect: farforrent/catalog/productgroups
+create:
+  title: Створити групу
+  redirect: 'farforrent/catalog/productgroups/update/:id'
+  redirectClose: farforrent/catalog/productgroups
+update:
+  title: Редагувати групу
+  redirect: farforrent/catalog/productgroups
+  redirectClose: farforrent/catalog/productgroups

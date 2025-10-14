@@ -1,0 +1,98 @@
+{% if products.count %}
+    {% for product in products %}
+        <div class="col-md-3 col-sm-6">
+            <div class="product-item" data-testid="product-item-{{ product.id }}">
+                <div class="product-image">
+                    {% if product.featured_image %}
+                        <img src="{{ product.featured_image.thumb(300, 250, 'crop') }}" alt="{{ product.name }}" class="img-responsive">
+                    {% else %}
+                        <div class="no-image">
+                            <i class="fa fa-image fa-3x"></i>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="product-info">
+                    <div class="product-name">
+                        <a href="{{ 'product/'~product.slug|app }}">{{ product.name }}</a>
+                    </div>
+                    <div class="product-price">
+                        <span class="price-per-day" data-price="{{ product.price }}">{{ product.formatted_price }}</span>
+                        <span class="price-label">/ день</span>
+                    </div>
+                    <div class="product-controls">
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <label class="control-label">Кількість:</label>
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default qty-btn-minus" type="button">-</button>
+                                    </span>
+                                    <input type="number" class="form-control quantity-input" value="1" min="1" max="{{ product.quantity }}">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default qty-btn-plus" type="button">+</button>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-xs-6">
+                                <label class="control-label">Днів:</label>
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default days-btn-minus" type="button">-</button>
+                                    </span>
+                                    <input type="number" class="form-control rental-days-input" value="1" min="1">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default days-btn-plus" type="button">+</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="product-total">
+                        <strong>Разом: <span class="total-price">{{ product.formatted_price }}</span></strong>
+                    </div>
+                    <button class="btn btn-primary btn-add-to-cart" 
+                            data-product-id="{{ product.id }}" 
+                            data-testid="add-to-cart-btn-{{ product.id }}">
+                        <i class="fa fa-cart-plus"></i> До кошика
+                    </button>
+                    {% if product.quantity > 0 %}
+                        <small class="text-success">В наявності: {{ product.quantity }} шт.</small>
+                    {% else %}
+                        <small class="text-danger">Немає в наявності</small>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+
+    {% if products.lastPage > 1 %}
+        <div class="col-md-12">
+            <div class="pagination-wrapper text-center">
+                <ul class="pagination">
+                    {% if products.currentPage > 1 %}
+                        <li><a href="{{ products.previousPageUrl() }}">&laquo; Попередня</a></li>
+                    {% endif %}
+
+                    {% for page in 1..products.lastPage %}
+                        {% if page == products.currentPage %}
+                            <li class="active"><span>{{ page }}</span></li>
+                        {% else %}
+                            <li><a href="{{ products.url(page) }}">{{ page }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if products.hasMorePages %}
+                        <li><a href="{{ products.nextPageUrl() }}">Наступна &raquo;</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    {% endif %}
+{% else %}
+    <div class="col-md-12">
+        <div class="alert alert-info text-center">
+            <h4>Товари не знайдені</h4>
+            <p>На жаль, товари в даній категорії відсутні або тимчасово недоступні.</p>
+        </div>
+    </div>
+{% endif %}

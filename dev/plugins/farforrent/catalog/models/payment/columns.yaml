@@ -1,0 +1,32 @@
+columns:
+    id:
+        label: ID
+        type: number
+        width: 60px
+
+    order_id:
+        label: Замовлення
+        type: text
+        searchable: true
+        sortable: true
+
+    type:
+        label: Тип
+        type: partial
+        path: $/farforrent/catalog/models/payment/_type_badge.htm
+        sortable: true
+
+    amount:
+        label: Сума
+        type: partial
+        path: $/farforrent/catalog/models/order/_price.htm
+        sortable: true
+
+    payment_method:
+        label: Метод оплати
+        type: text
+
+    paid_at:
+        label: Дата оплати
+        type: datetime
+        sortable: true

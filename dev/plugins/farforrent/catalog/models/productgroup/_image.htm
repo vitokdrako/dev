@@ -1,0 +1,26 @@
+<?php
+use System\Models\File;
+
+$src = null;
+
+if ($record->image instanceof File) {
+    // attachOne → прев’ю 90×90
+    $src = $record->image->getThumb(90, 90, ['mode' => 'crop']);
+} else {
+    // fallback: якщо раптом збережено рядок/медіашлях
+    $val = trim((string) ($record->image ?? ''));
+    if ($val) {
+        if (preg_match('~^(https?:)?//~i', $val)) {
+            $src = $val;
+        } else {
+            $val = ($val[0] === '/') ? $val : '/'.$val;
+            $src = \Url::to('/storage/app/media'.$val); // ← без use
+        }
+    }
+}
+
+if ($src) {
+    echo '<img src="'.e($src).'" width="90" height="90" style="object-fit:cover;border-radius:6px">';
+} else {
+    echo '<span class="text-muted">—</span>';
+}

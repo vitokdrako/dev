@@ -1,0 +1,85 @@
+<?php
+use Farforrent\Catalog\Models\Category;
+use Farforrent\Catalog\Models\Subcategory;
+
+// списки для селектів
+$catOptions = Category::orderBy('name_ua')->pluck('name_ua','id')->toArray();
+$subOptions = $group->category_id
+  ? Subcategory::where('category_id',$group->category_id)->orderBy('name_ua')->pluck('name_ua','id')->toArray()
+  : [];
+
+$imgW = $this->makeImageWidget($group, 'Group', 'gmeta_'.$group->id); // mediafinder для групового зображення
+?>
+<div id="group-meta-<?= $group->id ?>" class="group-meta">
+  <form data-request="onSaveGroupMeta" data-request-flash="1"
+        data-request-data="groupId: <?= $group->id ?>">
+
+    <div class="group-meta-grid">
+      <div class="meta-col image">
+        <?= $imgW->renderField('image') ?>
+      </div>
+
+      <div class="meta-col">
+        <label>Назва (UA)</label>
+        <input class="form-control" name="Group[name_ua]" value="<?= e($group->name_ua) ?>">
+      </div>
+
+      <div class="meta-col">
+        <label>Назва (EN)</label>
+        <input class="form-control" name="Group[name_en]" value="<?= e($group->name_en) ?>">
+      </div>
+
+      <div class="meta-col">
+        <label>Категорія</label>
+        <select class="form-control" name="Group[category_id]">
+          <option value="">— обрати —</option>
+          <?php foreach($catOptions as $id=>$title): ?>
+            <option value="<?= $id ?>" <?= $group->category_id==$id?'selected':'' ?>><?= e($title) ?></option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+
+      <div class="meta-col">
+        <label>Підкатегорія</label>
+        <select class="form-control" name="Group[subcategory_id]">
+          <option value="">— обрати —</option>
+          <?php foreach($subOptions as $id=>$title): ?>
+            <option value="<?= $id ?>" <?= $group->subcategory_id==$id?'selected':'' ?>><?= e($title) ?></option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+
+      <div class="meta-col">
+        <label>Матеріал</label>
+        <input class="form-control" name="Group[material]" value="<?= e($group->material) ?>">
+      </div>
+
+      <div class="meta-col">
+        <label>Колір</label>
+        <input class="form-control" name="Group[color]" value="<?= e($group->color) ?>">
+      </div>
+
+      <div class="meta-col">
+        <label>Цінність</label>
+        <select class="form-control" name="Group[rarity]">
+          <option value="regular" <?= $group->rarity==='regular'?'selected':'' ?>>Звичайний</option>
+          <option value="rare"    <?= $group->rarity==='rare'?'selected':'' ?>>Рідкісний</option>
+          <option value="vintage" <?= $group->rarity==='vintage'?'selected':'' ?>>Вінтаж</option>
+        </select>
+      </div>
+
+      <div class="meta-col">
+        <label>Ставка оренди, %</label>
+        <select class="form-control" name="Group[rent_percent]">
+          <?php foreach([5,10,15,20,25,30] as $p): ?>
+            <option value="<?= $p ?>" <?= (int)$group->rent_percent===$p?'selected':'' ?>><?= $p ?>%</option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+
+      <div class="meta-actions">
+        <button class="btn btn-primary" type="submit">Зберегти групу</button>
+      </div>
+    </div>
+  </form>
+</div>
